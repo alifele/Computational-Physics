@@ -1,0 +1,6 @@
+Here are some methods for arbitrary random number sampling:
+
+1. Inverse Transform Sampling
+2. Box-Muller Sampling (for Guassian rand)
+3. Accept and Reject Sampling
+4. Metropolice - Hasting Method
