@@ -1,6 +1,6 @@
-function result = giveIntervalswithRoot(F)
+function result = giveIntervalswithRoot(F, xmin, xmax)
     
-    intervals = randomIntervals([-1,1],15);
+    intervals = randomIntervals([xmin,xmax],15);
     intervalMult = F(intervals) .* circshift(F(intervals),-1);
     intervalwithRoots = [];
      
