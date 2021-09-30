@@ -13,7 +13,7 @@ function result = Bisection(F, interval, max_iteration)
     
     end
 
-    result = (a+b)/2
+    result = (a+b)/2;
 
 end
 
