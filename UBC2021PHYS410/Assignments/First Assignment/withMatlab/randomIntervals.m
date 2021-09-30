@@ -1,4 +1,17 @@
-function result = randomIntervals()
+function result = randomIntervals(interval, n_intreval)
+
+    stepSize = (interval(2)-interval(1))/n_intreval;
+    intervalPoints=[interval(1)];
+
+    while(intervalPoints(end)<interval(2))
+        nextVal = (intervalPoints(end)+rand()*stepSize);
+        intervalPoints(end+1) = nextVal;
+    end
+    intervalPoints(end) = interval(2);
+    result = intervalPoints;
+
+
+end
 
 
 
