@@ -1,0 +1,17 @@
+
+SFML --> you can add openGL functionalities
+VTK
+
+
+
+For Python:
+
+Glumpy
+Vispy --> Uses OpenGL
+Mayavi --> 3D data visualization
+
+Pyvis --> for network graphs
+
+
+
+
