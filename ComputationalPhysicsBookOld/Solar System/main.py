@@ -47,4 +47,3 @@ while True:
             exit()
     t += dt
     sketch.update(t)
-    print(t)
