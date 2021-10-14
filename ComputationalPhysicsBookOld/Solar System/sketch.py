@@ -12,7 +12,7 @@ class Sketch:
         self.sun = Sun(self.screen)
 
         self.particleList = []
-        for i in range(4):
+        for i in range(5):
             self.particleList.append(Particle((np.random.random(2)*2-1)*2,(np.random.random(2)*2-1)*2, self.screen))
 
         for elem in self.particleList:
