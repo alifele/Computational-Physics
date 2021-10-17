@@ -9,7 +9,7 @@ from Core import *
 from Star import *
 
 core = Core()
-star = Star()
+star = Star(core)
 
 typesList = {'core': core,
              'star': star}

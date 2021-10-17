@@ -22,3 +22,7 @@ class Screen:
 
     def update(self):
         pass
+
+
+    def fill(self):
+        self.screen.fill(self.parameters['background'])

@@ -1,3 +1,5 @@
+import numpy as np
+
 class Particles:
     def __init__(self, type, X,V,color, radii):
         self.type = type
@@ -7,4 +9,5 @@ class Particles:
         self.X0 = self.X
         self.V0 = self.V
         self.radii = radii
+        self.force = np.array((0,0), dtype='float')
 
