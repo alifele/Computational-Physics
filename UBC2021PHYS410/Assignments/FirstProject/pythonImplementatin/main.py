@@ -14,7 +14,6 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             exit()
-
     sketch.update(StarsX, CoresX, t)
     t+=1
     t = t % StarsX.shape[-1]

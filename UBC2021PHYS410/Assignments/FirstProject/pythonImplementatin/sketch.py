@@ -21,11 +21,17 @@ class Sketch:
             XDisp = self.scale*X + self.transition
             pygame.draw.circle(self.screen, (255, 0, 0), XDisp[:-1], 1)
 
-        for i in range(int(StarsX.shape[0]/2)):
-            j = i+star+1
+
+            j = star + int(StarsX.shape[0]/2)
             X = StarsX[j, :, frameNumber]
-            XDisp = self.scale*X + self.transition
+            XDisp = self.scale * X + self.transition
             pygame.draw.circle(self.screen, (0, 255, 0), XDisp[:-1], 1)
+
+        # for i in range(int(StarsX.shape[0]/2)):
+        #     j = i+star+1
+        #     X = StarsX[j, :, frameNumber]
+        #     XDisp = self.scale*X + self.transition
+        #     pygame.draw.circle(self.screen, (0, 255, 0), XDisp[:-1], 1)
 
         for core in range(CoresX.shape[0]):
             X = CoresX[core, :, frameNumber]

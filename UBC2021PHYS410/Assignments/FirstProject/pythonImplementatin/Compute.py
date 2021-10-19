@@ -4,16 +4,16 @@ from InitiateStars import *
 
 
 def Compute():
-    tmax = 22
-    l = 11
+    tmax = 25
+    l = 10
     N_timeSteps = np.power(2, l)
     dt = tmax / N_timeSteps
 
     params = {'dt': dt}
 
 
-    NStars1 = 500
-    NStars2 = 500
+    NStars1 = 100
+    NStars2 = 100
     NStars = NStars1 + NStars2
     NCores = 2
 
@@ -27,7 +27,7 @@ def Compute():
     CoresTimeCut = np.zeros((NCores, 3), dtype='float')
 
     initiateCores(CoresTimeCut, CoresV0)
-    initiateStars(StarsTimeCut, StarsV0, CoresTimeCut, NStars1, NStars2)
+    initiateStars(StarsTimeCut, StarsV0, CoresTimeCut, NStars1, NStars2, CoresV0)
 
     # for t in range(N_timeSteps):
     #     for star in range(NStars):
@@ -48,20 +48,22 @@ def Compute():
 
 
 def moveStars(StarsX, CoresX, params,t):
+    m = 1
     for star in range(StarsX.shape[0]):
         X = StarsX[star, :, t]
         Xpre = StarsX[star, :, t - 1]
         acceleration = 0
         for core in range(CoresX.shape[0]):
             Xj = CoresX[core, :, t]
-            r = Xj - X
-            acceleration += (r / (np.linalg.norm(r)**3+0.001))
+            r = Xj - X + 0.01
+            acceleration += m*((r) / (np.linalg.norm(r)**3+0.005))
 
         XNew = acceleration * params['dt'] ** 2 + 2 * X - Xpre
         StarsX[star, :, t + 1] = XNew
 
 
 def moveCores(CoresX, params,t):
+    m=1
     for core_i in range(CoresX.shape[0]):
         X = CoresX[core_i, :, t]
         Xpre = CoresX[core_i, :, t - 1]
@@ -69,8 +71,8 @@ def moveCores(CoresX, params,t):
         for core_j in range(CoresX.shape[0]):
             if core_i != core_j:
                 Xj = CoresX[core_j, :, t]
-                r = Xj - X
-                acceleration += (r / (np.linalg.norm(r) ** 3+0.001))
+                r = Xj - X + 0.01
+                acceleration += m*((r) / (np.linalg.norm(r) ** 3+0.005))
 
         XNew = acceleration * params['dt'] ** 2 + 2 * X - Xpre
         CoresX[core_i, :, t + 1] = XNew
