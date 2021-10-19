@@ -6,10 +6,10 @@ function [StarsX, CoresX] = Compute()
     
     dt = tmax/(N_timeSteps-1);
     
-    NStars1 = 50;
-    NStars2 = 5;
+    NStars1 = 5000;
+    NStars2 = 5000;
     NStars = NStars1 + NStars2;
-    NCores = 1;
+    NCores = 2;
     
     StarsX = zeros(NStars,3,N_timeSteps);
     CoresX = zeros(NCores,3,N_timeSteps);

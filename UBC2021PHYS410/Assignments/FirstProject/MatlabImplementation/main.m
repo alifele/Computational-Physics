@@ -13,11 +13,11 @@ for tt=1:N_timeSteps
     box on;
     hold on;
     updatePlot(StarsX, CoresX,tt);
-    t = t+1;
+    t = t+1
     t = mod(t, N_timeSteps);
-    java.lang.Thread.sleep(25);
+    java.lang.Thread.sleep(5);
 
-end
+end 
 
 
 

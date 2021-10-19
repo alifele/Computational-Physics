@@ -1,8 +1,9 @@
 function [StarsTimeCut, StarsV0] = initiateStars(StarsTimeCut, StarsV0, CoresTimeCut, NStars1, NStars2, CoresV0)
 
     rmax = 0.625;
-    rmin = 0.3;
+    rmin = 0.2;
     vcoeff = 1;
+    m = 1;
 
 
     for star = 1:NStars1
@@ -13,7 +14,7 @@ function [StarsTimeCut, StarsV0] = initiateStars(StarsTimeCut, StarsV0, CoresTim
         y = r*sin(theta);
         z = 0;
 
-        vmax = vcoeff*1/sqrt((r));
+        vmax = vcoeff*sqrt(m)/sqrt((r));
 
         vx = -vmax * sin(theta);
         vy = vmax * cos(theta);
@@ -24,29 +25,29 @@ function [StarsTimeCut, StarsV0] = initiateStars(StarsTimeCut, StarsV0, CoresTim
 
     end
 
-% 
-%     for j = 1:NStars2
-%     
-%     k = j+star;
-% 
-%     theta = rand()*pi*2;
-%     r = rmax*rand() + rmin;
-% 
-%     x = r*cos(theta);
-%     y = r*sin(theta);
-%     z = 0;
-% 
-%     vmax = vcoeff*1/(r);
-% 
-%     vx = -vmax * sin(theta);
-%     vy = vmax * cos(theta);
-%     vz = 0;
-% 
-%     StarsTimeCut(k,:) = [x,y,z] + CoresTimeCut(2,:);
-%     StarsV0(k,:) = [vx,vy,vz] + CoresV0(2,:);
-%     
-%     end
-%    
+        
+        for j = 1:NStars2
+        
+        k = j+star;
+        
+        theta = rand()*pi*2;
+        r = rmax*rand() + rmin;
+        
+        x = r*cos(theta);
+        y = r*sin(theta);
+        z = 0;
+        
+        vmax = vcoeff*sqrt(m)/sqrt((r));
+        
+        vx = -vmax * sin(theta);
+        vy = vmax * cos(theta);
+        vz = 0;
+        
+        StarsTimeCut(k,:) = [x,y,z] + CoresTimeCut(2,:);
+        StarsV0(k,:) = [vx,vy,vz] + CoresV0(2,:);
+
+     end
+    
 
 
 

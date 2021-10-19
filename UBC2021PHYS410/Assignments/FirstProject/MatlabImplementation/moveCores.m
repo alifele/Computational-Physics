@@ -1,6 +1,6 @@
 
 function CoresX = moveCores(CoresX,dt,t, NCores)
-    m=0;
+    m=1;
 
     for core_i = 1:NCores
         X = CoresX(core_i,:,t);
