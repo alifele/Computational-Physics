@@ -11,7 +11,7 @@ function CoresX = moveCores(CoresX,dt,t, NCores)
         for core_j =1:NCores
             if core_i ~= core_j
                 Xj = CoresX(core_j,:,t);
-                r = Xj - X + 0.01;
+                r = Xj - X + 0.01*0;
                 acceleration = acceleration + m * (r/(norm(r)^3 + 0.005));
             end
             XNew = acceleration * dt^2 + 2*X - Xpre;

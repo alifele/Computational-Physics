@@ -11,7 +11,7 @@ function StarsX = moveStars(StarsX, CoresX, dt,t, NStars, NCores)
 
         for core = 1:NCores
             Xj = CoresX(core, :,t);
-            r = Xj - X + 0.01;
+            r = Xj - X + 0.01*0;
             acceleration = acceleration + m*(r/(norm(r)^3 + 0.005));
         
         end

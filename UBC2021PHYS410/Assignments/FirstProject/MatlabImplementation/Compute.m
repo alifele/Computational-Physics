@@ -1,15 +1,38 @@
-function [StarsX, CoresX] = Compute()
+function [StarsX, CoresX] = Compute(l)
     
-    tmax = 25;
-    l = 10;
+    tmax = 25; %25
+    
     N_timeSteps = 2^l+1;
     
     dt = tmax/(N_timeSteps-1);
-    
-    NStars1 = 5000;
-    NStars2 = 5000;
+
+    % Galaxy Collision Initial Condition for Stars
+    % Number of stars for the original simulation of the interaction of
+    % two cores with stars orbiting them
+
+    %NStars1 = 20000;
+    %NStars2 = 20000;
+    %NStars = NStars1 + NStars2;
+    %NCores = 2;
+
+    % Two Body Initial Condition of Stars
+    % For the convergence test of the two body problem, we should set the 
+    % number of stars to be zero. we need to evaluate simulation for two
+    % interacting cores with out any stars.
+
+    %NStars1 = 0;
+    %NStars2 = 0;
+    %NStars = NStars1 + NStars2;
+    %NCores = 2;
+
+    % Single Moving Galaxy Initial Condition
+    NStars1 = 500;
+    NStars2 = 0;
+    NCores = 1;
     NStars = NStars1 + NStars2;
-    NCores = 2;
+
+
+
     
     StarsX = zeros(NStars,3,N_timeSteps);
     CoresX = zeros(NCores,3,N_timeSteps);

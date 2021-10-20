@@ -5,50 +5,57 @@ function [StarsTimeCut, StarsV0] = initiateStars(StarsTimeCut, StarsV0, CoresTim
     vcoeff = 1;
     m = 1;
 
-
+%% Initial Condition for the Galaxy Collision Simualtion
     for star = 1:NStars1
         theta = rand()*pi*2;
         r = rmax*rand() + rmin;
-
         x = r*cos(theta);
         y = r*sin(theta);
         z = 0;
-
         vmax = vcoeff*sqrt(m)/sqrt((r));
-
         vx = -vmax * sin(theta);
         vy = vmax * cos(theta);
         vz = 0;
-
         StarsTimeCut(star,:) = [x,y,z] + CoresTimeCut(1,:);
         StarsV0(star,:) = [vx,vy,vz] + CoresV0(1,:);
 
     end
 
         
-        for j = 1:NStars2
-        
+    for j = 1:NStars2
         k = j+star;
-        
         theta = rand()*pi*2;
-        r = rmax*rand() + rmin;
-        
+        r = rmax*rand() + rmin;        
         x = r*cos(theta);
         y = r*sin(theta);
-        z = 0;
-        
-        vmax = vcoeff*sqrt(m)/sqrt((r));
-        
+        z = 0;       
+        vmax = vcoeff*sqrt(m)/sqrt((r));      
         vx = -vmax * sin(theta);
         vy = vmax * cos(theta);
-        vz = 0;
-        
+        vz = 0;       
         StarsTimeCut(k,:) = [x,y,z] + CoresTimeCut(2,:);
         StarsV0(k,:) = [vx,vy,vz] + CoresV0(2,:);
 
      end
     
 
+%% Initial condition for Single Galaxy Simulation
+    rmax = 1.5;
+    rmin = 0.75;
+    for star = 1:NStars1
+        theta = rand()*pi*2;
+        r = rmax*rand() + rmin;
+        x = r*cos(theta);
+        y = r*sin(theta);
+        z = 0;
+        vmax = vcoeff*sqrt(m)/sqrt((r));
+        vx = -vmax * sin(theta);
+        vy = vmax * cos(theta);
+        vz = 0;
+        StarsTimeCut(star,:) = [x,y,z] + CoresTimeCut(1,:);
+        StarsV0(star,:) = [vx,vy,vz] + CoresV0(1,:);
+
+    end
 
 
 

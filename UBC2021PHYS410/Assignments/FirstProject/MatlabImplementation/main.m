@@ -1,23 +1,55 @@
 
 
-[StarsX, CoresX] = Compute();
+l = 8;
+
+
+[StarsX, CoresX] = Compute(l);
 N_timeSteps = size(StarsX);
 N_timeSteps = N_timeSteps(end);
 t = 1;
 
+generateOutPut = 1;
 
-for tt=1:N_timeSteps
+
+
+if generateOutPut ~= 1
+    Core1X = reshape(CoresX(1,1,:),1,[]);
+    Core1Y = reshape(CoresX(1,2,:),1,[]);
+    plot(Core1X)
+end
+
+
+
+
+if generateOutPut == 1
+
+    avifilename = 'SingleGalaxyMoving.avi';
+    aviobj = VideoWriter(avifilename);
+    open(aviobj);
     
-    clf;
-    axis square;
-    box on;
-    hold on;
-    updatePlot(StarsX, CoresX,tt);
-    t = t+1
-    t = mod(t, N_timeSteps);
-    java.lang.Thread.sleep(5);
+    
+    
+    
+    for j=1:1
+    
+        for tt=1:N_timeSteps
+            
+            clf;
+            axis square;
+            box on;
+            hold on;
+            updatePlot(StarsX, CoresX,tt, aviobj);
+            t = t+1
+            t = mod(t, N_timeSteps);
+            %java.lang.Thread.sleep(100);
+        
+        end 
+    
+    end
+    
+    close(aviobj);
 
-end 
+end
 
 
 
