@@ -25,9 +25,9 @@ end
 
 if generateOutPut == 1
 
-    avifilename = 'GalaxyCollisionCenterofMass.avi';
-    aviobj = VideoWriter(avifilename);
-    open(aviobj);
+%     avifilename = 'GalaxyCollisionCenterofMass.avi';
+%     aviobj = VideoWriter(avifilename);
+%     open(aviobj);
     
     
     
@@ -49,7 +49,7 @@ if generateOutPut == 1
     
     end
     
-     close(aviobj);
+%      close(aviobj);
 
 end
 

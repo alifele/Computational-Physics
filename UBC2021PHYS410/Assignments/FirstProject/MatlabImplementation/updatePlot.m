@@ -44,7 +44,7 @@ function updatePlot(StarsX, CoresX, t, aviobj)
 
 
     
-    writeVideo(aviobj, getframe(gcf));
+%     writeVideo(aviobj, getframe(gcf));
     
 
     

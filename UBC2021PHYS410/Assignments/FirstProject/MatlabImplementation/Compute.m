@@ -10,8 +10,8 @@ function [StarsX, CoresX] = Compute(l, tmax)
     % Number of stars for the original simulation of the interaction of
     % two cores with stars orbiting them
 
-    NStars1 = 20000;
-    NStars2 = 20000;
+    NStars1 = 1000;
+    NStars2 = 1000;
     NStars = NStars1 + NStars2;
     NCores = 2;
 
