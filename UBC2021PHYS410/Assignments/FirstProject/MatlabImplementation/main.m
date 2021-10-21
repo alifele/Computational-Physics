@@ -40,7 +40,8 @@ if generateOutPut == 1
             axis square;
             box on;
             hold on;
-            updatePlot(StarsX, CoresX,tt, aviobj);
+            updatePlot(StarsX, CoresX,tt);
+%             updatePlot(StarsX, CoresX,tt, aviobj);
             t = t+1
             t = mod(t, N_timeSteps);
             %java.lang.Thread.sleep(100);
