@@ -39,27 +39,32 @@ function [StarsTimeCut, StarsV0] = initiateStars(StarsTimeCut, StarsV0, CoresTim
      end
     
 
-%% Initial condition for Single Galaxy Simulation
-    rmax = 1.5;
-    rmin = 0.75;
-    for star = 1:NStars1
-        theta = rand()*pi*2;
-        r = rmax*rand() + rmin;
-        x = r*cos(theta);
-        y = r*sin(theta);
-        z = 0;
-        vmax = vcoeff*sqrt(m)/sqrt((r));
-        vx = -vmax * sin(theta);
-        vy = vmax * cos(theta);
-        vz = 0;
-        StarsTimeCut(star,:) = [x,y,z] + CoresTimeCut(1,:);
-        StarsV0(star,:) = [vx,vy,vz] + CoresV0(1,:);
+% %% Initial condition for Single Galaxy Simulation
+%     rmax = 1.5;
+%     rmin = 0.75;
+%     for star = 1:NStars1
+%         theta = rand()*pi*2;
+%         r = rmax*rand() + rmin;
+%         x = r*cos(theta);
+%         y = r*sin(theta);
+%         z = 0;
+%         vmax = vcoeff*sqrt(m)/sqrt((r));
+%         vx = -vmax * sin(theta);
+%         vy = vmax * cos(theta);
+%         vz = 0;
+%         StarsTimeCut(star,:) = [x,y,z] + CoresTimeCut(1,:);
+%         StarsV0(star,:) = [vx,vy,vz] + CoresV0(1,:);
+% 
+%     end
+% 
+% 
+% 
+% end
+% 
 
-    end
 
 
 
-end
 
 
 

@@ -1,9 +1,10 @@
 
 
-l = 8;
+l = 10;
+tmax = 12; %25
 
 
-[StarsX, CoresX] = Compute(l);
+[StarsX, CoresX] = Compute(l, tmax);
 N_timeSteps = size(StarsX);
 N_timeSteps = N_timeSteps(end);
 t = 1;
@@ -13,9 +14,10 @@ generateOutPut = 1;
 
 
 if generateOutPut ~= 1
-    Core1X = reshape(CoresX(1,1,:),1,[]);
-    Core1Y = reshape(CoresX(1,2,:),1,[]);
-    plot(Core1X)
+%     Core1X = reshape(CoresX(1,1,:),1,[]);
+%     Core1Y = reshape(CoresX(1,2,:),1,[]);
+%     plot(Core1X)
+ConvergenceTest(tmax);
 end
 
 
@@ -23,7 +25,7 @@ end
 
 if generateOutPut == 1
 
-    avifilename = 'SingleGalaxyMoving.avi';
+    avifilename = 'GalaxyCollisionCenterofMass.avi';
     aviobj = VideoWriter(avifilename);
     open(aviobj);
     
@@ -47,7 +49,7 @@ if generateOutPut == 1
     
     end
     
-    close(aviobj);
+     close(aviobj);
 
 end
 
