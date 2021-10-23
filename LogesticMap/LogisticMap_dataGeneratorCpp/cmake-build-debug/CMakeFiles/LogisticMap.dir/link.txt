@@ -1,0 +1,1 @@
+/usr/bin/c++ -g CMakeFiles/LogisticMap.dir/main.cpp.o CMakeFiles/LogisticMap.dir/Map.cpp.o -o LogisticMap 

@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/BCCRC.CA/aparanj/TRASH/LogisticMap/Map.h
+
+/home/BCCRC.CA/aparanj/TRASH/LogisticMap/main.cpp
+iostream
+-
+Map.h
+/home/BCCRC.CA/aparanj/TRASH/LogisticMap/Map.h
+fstream
+-
+

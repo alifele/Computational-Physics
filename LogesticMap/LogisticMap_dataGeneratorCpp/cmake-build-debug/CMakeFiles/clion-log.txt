@@ -1,0 +1,4 @@
+/home/BCCRC.CA/aparanj/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/212.5284.51/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - Unix Makefiles" /home/BCCRC.CA/aparanj/TRASH/LogisticMap
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/BCCRC.CA/aparanj/TRASH/LogisticMap/cmake-build-debug
