@@ -9,7 +9,7 @@ function [tout, yout] = rk4(fcn, tspan, y0)
         
         t0 = tspan(i);
         dt = tspan(i+1) - t0;
-        y0 = rk4step(@fcn, t0, dt, y0);
+        y0 = rk4step(fcn, t0, dt, y0);
         yout(:,i+1) = y0;
 
     end

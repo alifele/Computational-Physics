@@ -12,42 +12,43 @@ function [tout, yout] = rkadd(fcn, tspan, reltol1, y0)
         dt = t_next - t0;
 
 
-        y_fine = rk4step(@fcn, t0, dt/2, y0);
-        y_fine = rk4step(@fcn, t0+dt/2, dt/2, y_fine);
-        y_coarse = rk4step(@fcn, t0, dt, y0);
+        y_fine = rk4step(fcn, t0, dt/2, y0);
+        y_fine = rk4step(fcn, t0+dt/2, dt/2, y_fine);
+        y_coarse = rk4step(fcn, t0, dt, y0);
 
         DeltaY = norm(y_fine(1) - y_coarse(1));
         E_trunc = DeltaY * 16/15;
         C = 0.9 * (reltol1*y0(1)/E_trunc)^(1/5);
 
         if C >= 1
-            y0 = rk4step(@fcn, t0, dt, y0);
+            y0 = rk4step(fcn, t0, dt, y0);
             yout(:,i+1) = y0;
         end
 
         if C < 1
-            while C < 1
+            while C <= 1
                 if C*dt<min_timeStep
                     dt = min_timeStep;
                 end
                 dt = C * dt;
-                y0 = rk4step(@fcn, t0, dt, y0);
+                y0 = rk4step(fcn, t0, dt, y0);
                 t0 = t0 + dt;
                 dt = t_next - t0; 
 
-                y_fine = rk4step(@fcn, t0, dt/2, y0);
-                y_fine = rk4step(@fcn, t0+dt/2, dt/2, y_fine);
-                y_coarse = rk4step(@fcn, t0, dt, y0);
+                y_fine = rk4step(fcn, t0, dt/2, y0);
+                y_fine = rk4step(fcn, t0+dt/2, dt/2, y_fine);
+                y_coarse = rk4step(fcn, t0, dt, y0);
         
                 DeltaY = norm(y_fine(1) - y_coarse(1));
                 E_trunc = DeltaY * 16/15;
-                C = 0.9 * (reltol1*y0(1)/E_trunc)^(1/5);
+                C = 0.9 * (abs(reltol1*y0(1)/E_trunc))^(1/5);
                 
             end
 
-            y0 = rk4step(@fcn, t0, dt, y0);
+            y0 = rk4step(fcn, t0, dt, y0);
             yout(:,i+1) = y0;
         end
+        C
     
     end
 
