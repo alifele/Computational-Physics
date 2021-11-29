@@ -6,7 +6,7 @@ import matplotlib
 from matplotlib.animation import FuncAnimation
 
 
-class Schrodinger2D:
+class Diffusion2D:
     def __init__(self, tmax, level, lamda, idtype, idpar, vtype, vpar):
         self.tmax = tmax
         self.level = level
@@ -31,8 +31,8 @@ class Schrodinger2D:
         self.tList = np.arange(0, self.tmax, self.dt)
         self.M = self.xList.shape[0]
         self.N = self.tList.shape[0]
-        self.psi = np.zeros((self.M, self.M), dtype='complex')
-        self.psiData = np.zeros((self.M,self.M,self.N), dtype='complex')
+        self.psi = np.zeros((self.M, self.M))
+        self.psiData = np.zeros((self.M,self.M,self.N))
         self.R = self.dt/self.dx**2
 
     def evaluate_idtype(self):
@@ -48,12 +48,12 @@ class Schrodinger2D:
             deltay = self.idpar[3]
             px = self.idpar[4]
             py = self.idpar[5]
-            self.psi = np.exp(1j*px*self.X)*np.exp(1j*py*self.Y)*np.exp(-(((self.X - x0)/deltax)**2+((self.Y - y0)/deltay)**2))
+            self.psi = np.exp(-(((self.X - x0)/deltax)**2+((self.Y - y0)/deltay)**2))
 
-        # self.psi[0,:] = 0
-        # self.psi[-1,:] = 0
-        # self.psi[:,0] = 0
-        # self.psi[:,-1] = 0
+        self.psi[0,:] = 0
+        self.psi[-1,:] = 0
+        self.psi[:,0] = 0
+        self.psi[:,-1] = 0
 
     def evaluate_vtype(self):
         self.V = np.zeros((self.M, self.M))
@@ -70,15 +70,15 @@ class Schrodinger2D:
 
     def Solve(self):
         self.createDeltaANDTilda()
-        self.create_abcd()
+        #self.create_abcd()
         for t in range(self.N):
             self.psiData[:,:,t] = self.psi
-            self.psi = self.ab.dot(self.psi.dot(self.cd))
+            self.psi = self.A.dot(self.psi.dot(self.A.transpose()))
 
     def createDeltaANDTilda(self):
-        upDiag = np.ones(self.M, dtype='complex') * (1)
-        Diag = np.ones(self.M, dtype='complex') * (-2)
-        lowDiag = np.ones(self.M, dtype='complex') * (1)
+        upDiag = np.ones(self.M) * (1)
+        Diag = np.ones(self.M) * (-2)
+        lowDiag = np.ones(self.M) * (1)
         upDiag[1] = 0
         lowDiag[-2] = 0
         Diag[0] = 1
@@ -86,55 +86,9 @@ class Schrodinger2D:
         self.Delta = spdiags([lowDiag, Diag, upDiag], [-1, 0, 1], self.M, self.M)
         self.mat = self.Delta.toarray()
 
-        self.DtildaY = self.Delta - self.dt/self.R * self.V
-        self.DtildaX = self.Delta - self.dt/self.R * self.V.T
-
-    def create_abcd(self):
-        Mx = (np.eye(self.M) - 1j*self.R/2 * self.DtildaX)
-        M_p = (np.eye(self.M) + 1j*self.R/2 * self.Delta.toarray())
-        M_m = (np.eye(self.M) - 1j * self.R / 2 * self.Delta.toarray())
-        My = (np.eye(self.M) + 1j*self.R/2 * self.DtildaY)
-
-
-
-        self.ab = (np.linalg.inv(M_m)).dot(My)
-        self.cd = (M_p.transpose()).dot((np.linalg.inv(Mx)).transpose())
-
-
-
-    def Solve2(self):
-        self.calculate_Delta_Tilda()
-        self.calculate_ad_bcT()
-        for t in range(self.N):
-            self.psiData[:, :, t] = self.psi
-            self.psi = self.ad.dot(self.psi.dot(self.bcT))
-
-
-    def calculate_Delta_Tilda(self):
-        upDiag = np.ones(self.M, dtype='complex') * (1)
-        Diag = np.ones(self.M, dtype='complex') * (-2)
-        lowDiag = np.ones(self.M, dtype='complex') * (1)
-        upDiag[1] = 0
-        lowDiag[-2] = 0
-        Diag[0] = 1
-        Diag[-1] = 1
-        self.Delta = spdiags([lowDiag, Diag, upDiag], [-1, 0, 1], self.M, self.M)
-        self.mat = self.Delta.toarray()
-        self.DeltaTilda = self.Delta.toarray() - self.dt/self.R * self.V
-
-        self.D_tildaY = np.eye(self.M) - 1j*self.R/2 * self.DeltaTilda
-        self.D_tildaX = np.eye(self.M) - 1j*self.R/2 * self.Delta.toarray()
-        self.DX = np.eye(self.M) + 1j*self.R/2 * self.Delta.toarray()
-        self.DY = np.eye(self.M) + 1j*self.R/2 * self.DeltaTilda
-
-    def calculate_ad_bcT(self):
-        self.a = np.linalg.inv(self.D_tildaY)
-        self.b = np.linalg.inv(self.D_tildaX)
-        self.c = self.DX
-        self.d = self.DY
-
-        self.ad = self.a.dot(self.d)
-        self.bcT = np.transpose(self.b.dot(self.c))
+        self.D = np.eye(self.M) + self.R/2 * self.Delta.toarray()
+        self.Dtilda = np.eye(self.M) - self.R/2 * self.Delta.toarray()
+        self.A = (np.linalg.inv(self.Dtilda)).dot(self.D)
 
 
 
@@ -160,14 +114,14 @@ class Schrodinger2D:
 if __name__ == "__main__":
     idtype = 1
     vtype = 0
-    vpar = [0.25,0.75,0.25,0.75,-10]
-    idpar = [0.5,0.5,0.05,0.05,0.0,0]
+    vpar = [0.25,0.85,-2500]
+    idpar = [0.5,0.5,0.075,0.075,0,0]
     #idpar = [2,3]
-    tmax = 0.1
+    tmax = 0.05
     level = 8
-    lamda = 0.01*3/4
+    lamda = 1
 
-    system = Schrodinger2D(tmax, level, lamda, idtype, idpar, vtype, vpar)
+    system = Diffusion2D(tmax, level, lamda, idtype, idpar, vtype, vpar)
     system.Solve()
     results = system.Returns()
     psire = results['psire']
@@ -195,11 +149,11 @@ if __name__ == "__main__":
 
 
     anim = FuncAnimation(fig, animate, init_func=init,
-                         frames=system.N, interval=0.1, blit=True)
+                         frames=system.N, interval=50, blit=True)
 
     plt.colorbar()
-    # print("hello")
-    #
+    print("hello")
+
     # plt.style.use('seaborn-pastel')
     # fig = plt.figure()
     # ax = plt.axes(xlim=(0, 4), ylim=(-2, 2))
@@ -214,7 +168,7 @@ if __name__ == "__main__":
     #
     #
     # def animate(i):
-    #     ydata = psi[:,int(system.M/2), i]
+    #     ydata = psire[:,100, i]
     #     xdata = np.linspace(0, 1, ydata.shape[0])
     #     line.set_data(xdata, ydata)
     #     ax.set_title("frame: {}".format(i))

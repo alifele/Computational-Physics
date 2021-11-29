@@ -89,7 +89,11 @@ class Schrodinger:
 
 
     def Integral(self):
-        pass
+        psi = self.psiData
+        psi = np.abs(psi)**2
+        integ_ = 0.5*(psi + np.roll(psi, -1, axis=1))*self.dx
+        self.integ = integ_[:,:-1]
+        self.calculateP()
 
     def Returns(self):
         results = dict()
@@ -100,16 +104,24 @@ class Schrodinger:
         results["psiim"] = np.imag(self.psiData)
         results["psimod"] = np.abs(self.psiData)
         results["v"] = self.V
-        results["prob"] = "not ready yet"
+        self.Integral()
+        results["prob"] = self.P
 
         return results
+
+    def calculateP(self):
+        self.P = np.zeros(self.integ.shape)
+        summed = np.zeros(self.integ.shape[0])
+        for i in range(self.integ.shape[1]):
+            summed += self.integ[:,i]
+            self.P[:,i] = summed
 
 
 
 if __name__ == "__main__":
     idtype = 1
-    vtype = 1
-    vpar = [0.25,0.85,-2500]
+    vtype = 0
+    vpar = [0.25,0.75,-2500]
     idpar = [0.5,0.075,0.0]
     tmax = 0.8
     level = 8
@@ -121,7 +133,7 @@ if __name__ == "__main__":
     psire = results['psire']
     psiim = results['psiim']
     psi = results['psimod']
-
+    integ = results['prob']
 
     plt.style.use('seaborn-pastel')
     fig = plt.figure()
@@ -132,12 +144,12 @@ if __name__ == "__main__":
     def init():
         line.set_data([], [])
         ax.set_xlim([0, 1])
-        ax.set_ylim([-1, 1])
+        ax.set_ylim([0, 0.25])
         return line,
 
 
     def animate(i):
-        ydata = psi[i, :]
+        ydata = integ[i, :]
         xdata = np.linspace(0, 1, ydata.shape[0])
         line.set_data(xdata, ydata)
         ax.set_title("frame: {}".format(i))
