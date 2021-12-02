@@ -1,0 +1,5 @@
+P_bar = mean(prob, 1);
+P_bar = P_bar / P_bar(end);
+plot(x(1:end-1), P_bar)
+
+mat = P_bar - P_bar.';
