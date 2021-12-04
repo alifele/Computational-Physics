@@ -1,0 +1,32 @@
+GenerateVidoe = 1;
+
+figure()
+hold on;
+
+if GenerateVidoe == 1
+    avifilename = '2D_potentialWell.avi';
+    aviobj = VideoWriter(avifilename);
+    open(aviobj);
+end
+
+colormap cool;
+for tt = 1:1:size(t,2)
+    clf;
+    contourf(psimod(:,:,tt),7);
+    java.lang.Thread.sleep(1);
+    caxis([0,1]);
+    axis square;
+    colorbar;
+    
+    title("Frame:", tt)
+    
+    if GenerateVidoe == 1
+        writeVideo(aviobj, getframe(gcf));
+    end
+    drawnow;
+end
+
+if GenerateVidoe ==1 
+    close(aviobj);
+end
+close;

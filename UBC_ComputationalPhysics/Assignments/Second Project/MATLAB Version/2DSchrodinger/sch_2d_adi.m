@@ -44,7 +44,7 @@ function [x, y, t, psi, psire, psiim, psimod, v] = ...
            y_min = vpar(3);
            y_max = vpar(4);
            Vc = vpar(5);
-           V((X>x_min).*(X<x_max).*(Y>y_min).*(Y<y_max)) = Vc;
+           V((X>x_min)&(X<x_max)&(Y>y_min)&(Y<y_max)) = Vc;
         end
     
     %% Solve
