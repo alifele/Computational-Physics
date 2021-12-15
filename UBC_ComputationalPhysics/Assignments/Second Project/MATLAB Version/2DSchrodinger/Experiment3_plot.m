@@ -17,13 +17,12 @@ for tt = 1:4:size(t,2)
     caxis([0,1]);
     axis square;
     colorbar;
-    
     title("Frame:", tt)
-    
+    drawnow;
     if GenerateVidoe == 1
         writeVideo(aviobj, getframe(gcf));
     end
-    drawnow;
+    
 end
 
 if GenerateVidoe ==1 

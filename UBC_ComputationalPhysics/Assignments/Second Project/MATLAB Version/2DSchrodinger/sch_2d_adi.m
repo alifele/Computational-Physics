@@ -46,6 +46,29 @@ function [x, y, t, psi, psire, psiim, psimod, v] = ...
            Vc = vpar(5);
            V((X>x_min)&(X<x_max)&(Y>y_min)&(Y<y_max)) = Vc;
         end
+
+        if vtype ==2
+            x1 = vpar(1);
+            x2 = vpar(2);
+            x3 = vpar(3);
+            x4 = vpar(4);
+            Vc = vpar(5);
+
+            [x1,i1] = min(xList<x1);
+            [x2,i2] = min(xList<x2);
+            [x3,i3] = min(xList<x3);
+            [x4,i4] = min(xList<x4);
+
+            jp = (nx-1)/4+1;
+            V(:,jp) = Vc;
+            V(:,jp+1) = Vc;
+            V(i1:i2,jp) = 0;
+            V(i3:i4,jp) = 0;
+            V(i1:i2,jp+1) = 0;
+            V(i3:i4,jp+1) = 0;
+            
+
+        end
     
     %% Solve
 
