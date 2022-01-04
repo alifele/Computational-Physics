@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from ReceptorNegativeOrgans import *
 import numpy as np
 
@@ -95,3 +96,7 @@ class Main:
 
 if __name__ == "__main__":
     PBPK_model = Main()
+=======
+import numpy as np
+import matplotlib.pyplot as plt
+>>>>>>> c09c847e7d5b5beb328c1bccdad0495350f7e63f
