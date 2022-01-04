@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class FreePeptide:
     def __init__(self):
         self.vascular_unlabeled = 0
@@ -11,6 +12,10 @@ class FreePeptide:
         self.interestitial_labeled = 0
         self.internalized_labeled = 0
         self.interacellular_labeled = 0
+
+        self.P = 0  ## This will be used for element of the master compartment (Arteries and Veins)
+                              ## the reason that I defined it separately is that the Arteries and Veins do not have
+                              ## separate internal sub compartments (intracellular, interstitial, vascular. SSTR2, etc)
 
 
 class FreePeptideList:
