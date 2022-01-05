@@ -1,5 +1,9 @@
-<<<<<<< HEAD
 from ReceptorNegativeOrgans import *
+from ReceptorPositiveOrgans import *
+from ComplexOrgans import *
+from MasterOrgans import *
+from SimpleOrgans import *
+
 import numpy as np
 
 
@@ -10,19 +14,16 @@ class Main:
         self.initial_values = {"P_vascular_unlabeled": 0,
                                "P_interstitial_unlabeled": 0,
                                "P_internalized_unlabeled": 0,
-                               "P_interacellular_unlabeled": 0,
+                               "P_interacellular_unlabeled": 0,  ## for kidney
+                               "P_unlabeled": 0,  ## for Art and Vein
                                "P_vascular_labeled": 0,
                                "P_interstitial_labeled": 0,
                                "P_internalized_labeled": 0,
-                               "P_interacellular_labeled": 0}
+                               "P_interacellular_labeled": 0,  ## for kidney
+                               "P_labeled": 0,
+                               "PPR_labeled": 0,
+                               "PPR_unlabeled": 0}  ## for Art and Vein
 
-        self.tmax = simParameters["tmax"]
-        self.level = simParameters["level"]
-        self.N_t = simParameters["N_t"]
-        self.N_t = np.power(2, self.level)
-        self.dt = self.tmax / self.N_t
-        self.simParameters = {"tmax": 0,
-                              "level": 0}
 
         self.setOrganParameters()
         self.setOrganVariables()
@@ -40,63 +41,119 @@ class Main:
                               "dt": dt}
 
     def setOrganVariables(self):
-        self.BrainVariables = self.initial_values
-        self.HeartVariables = self.initial_values
-        self.BoneVariables = self.initial_values
-        self.SkinVariables = self.initial_values
-        self.AdiposeVariables = self.initial_values
-        self.LungsVariables = self.initial_values
+        self.Brain_var = self.initial_values
+        self.Heart_var = self.initial_values
+        self.Bone_var = self.initial_values
+        self.Skin_var = self.initial_values
+        self.Adipose_var = self.initial_values
+        self.Lungs_var = self.initial_values
+
+        self.Liver_var = self.initial_values
+        self.Spleen_var = self.initial_values
+        self.Tumor_var = self.initial_values
+        self.RedMarrow_var = self.initial_values
+        self.GI_var = self.initial_values
+        self.Muscle_var = self.initial_values
+        self.ProstateUterus_var = self.initial_values
+        self.Adrenals_var = self.initial_values
+        self.Rest_var = self.initial_values
+
+        self.Kidney_var = self.initial_values
+
+        self.Art_var = self.initial_values
+        self.Vein_var = self.initial_values
+
+        self.BloodProteinComplex_var = self.initial_values
 
     def setOrganParameters(self):
-        self.Bone_param = {"F": 0,
-                           "V_v": 0,
-                           "PS": 0,
-                           "V_int": 0,
-                           "lambda_phy": self.lambda_phy,
-                           "F_ART": 0}
-
-        self.Heart_param = {"F": 0,
-                            "V_v": 0,
-                            "PS": 0,
-                            "V_int": 0,
-                            "lambda_phy": self.lambda_phy,
-                            "F_ART": 0}
-
+        ### Receptor Negative Organs
         self.Brain_param = {"F": 0,
-                            "V_v": 0,
-                            "PS": 0,
-                            "V_int": 0,
-                            "lambda_phy": self.lambda_phy,
-                            "F_ART": 0}
-
-        self.Skin_param = {"F": 0,
                            "V_v": 0,
                            "PS": 0,
                            "V_int": 0,
-                           "lambda_phy": self.lambda_phy,
-                           "F_ART": 0}
+                           "lambda_phy": self.lambda_phy}
+        #
+        # self.Heart_param
+        # self.Bone_param
+        # self.Skin_param
+        # self.Asipose_param
+        # self.Lungs_param
 
-        self.Asipose_param = {"F": 0,
-                              "V_v": 0,
-                              "PS": 0,
-                              "V_int": 0,
-                              "lambda_phy": self.lambda_phy,
-                              "F_ART": 0}
-
-        self.Lungs_param = {"F": 0,
+        ### Receptor Positive Organs
+        self.Liver_param = {"F": 0,
                             "V_v": 0,
                             "PS": 0,
                             "V_int": 0,
-                            "lambda_phy": self.lambda_phy,
-                            "F_ART": 0}
+                            "k_on": 0,
+                            "k_off": 0,
+                            "lambda_int": 0,
+                            "lambda_rel": 0,
+                            "lambda_phy": self.lambda_phy}
+        # self.Spleen_param
+        # self.Tumor_param
+        # self.RedMarrow_param
+        # self.GI_param
+        # self.Muscle_param
+        # self.ProstateUterus_param
+        # self.Adrenal_param
+        # self.Rest_param
+
+        ### Complex Compartment Organs
+        self.Kidney_param = {"F": 0,
+                             "V_v": 0,
+                             "PS": 0,
+                             "V_int": 0,
+                             "k_on": 0,
+                             "k_off": 0,
+                             "lambda_int": 0,
+                             "lambda_rel": 0,
+                             "lambda_phy": self.lambda_phy,
+                             "GFR": 0,
+                             "theta": 0,
+                             "f_ecx": 0}
+
+        ### Master Compartment Organs
+        self.Art_param = {"F": 0,
+                          "V": 0}
+        # self.Vein_param =
+
+
+        ### Simple Compartment Organd
+        self.BloodProteinComplex_par = {"K_pr":0}
 
     def setOrgans(self):
-        self.Brain = Brain(self.Brain_param, self.BrainVariables)
+        self.Brain = Brain(self.Brain_param, self.Brain_var, self.simParameters)
+        # self.Heart = 0
+        # self.Bone = 0
+        # self.Skin = 0
+        # self.Adipose = 0
+        # self.Lungs = 0
+
+        self.Liver = Liver(self.Liver_param, self.Liver_var, self.simParameters)
+        # self.Spleen = 0
+        # self.Tumor = 0
+        # self.RedMarrow = 0
+        # self.GI = 0
+        # self.Muscle = 0
+        # self.ProstateUterus = 0
+        # self.Rest = 0
+
+        self.Kidney = Kidney(self.Kidney_param, self.Liver_var, self.simParameters)
+
+        self.PlasmaProteinComplex = BloodPlasmaProteinComplex(self.Kidney_param, self.Liver_var, self.simParameters)
+
+
+        self.OrgansList = [self.Brain, self.Heart, self.Bone, self.Skin, self.Adipose,
+                           self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
+                           self.GI, self.ProstateUterus, self.Rest, self.Kidney, self.PlasmaProtein]
+
+
+        self.Art = Art(self.Art_param, self.Art_var, self.simParameters, self.OrgansList)
+        # self.Vein = 0
+
+        for Organ in self.OrgansList:  ## Adding the Vein and Areterial information to Organs
+            Organ.Set_ArtVein(self.Art, self.Vein)
 
 
 if __name__ == "__main__":
     PBPK_model = Main()
-=======
-import numpy as np
-import matplotlib.pyplot as plt
->>>>>>> c09c847e7d5b5beb328c1bccdad0495350f7e63f

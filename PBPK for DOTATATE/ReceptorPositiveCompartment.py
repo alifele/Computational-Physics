@@ -2,11 +2,9 @@ from FreePeptideClass import FreePeptide, FreePeptideList
 from ReceptorPeptideClass import *
 import numpy as np
 class ReceptorPositiveCompartment:
-    def __init__(self, RPC_parameters, variables, simParameters, Art, Vein):
-        self.parameters = RPC_parameters
-        self.variables = variables # initial values of the variables
+    def __init__(self, RPC_parameters, variables, simParameters):
 
-
+        self.name = ""
         self.P = FreePeptide()
 
         self.P.vascular_unlabeled = variables["P_vascular_unlabeled"]
@@ -36,30 +34,51 @@ class ReceptorPositiveCompartment:
         self.N_t = simParameters["N_t"]
         self.dt = simParameters["dt"]
 
-        self.Art = Art
-        self.Vein = Vein
+
         self.RPList = ReceptorPeptideList(self.N_t)
 
+
+    def Set_ArtVein(self, Art, Vein):
+        self.Art = Art
+        self.Vein = Vein
 
 
 
     def Calculate(self):
 
-        self.P.vascular_unlabeled += (self.F * (self.Art.P / self.Art.V - self.P.vascular_unlabeled / self.V_v) +
+        ## Vascular Volume
+        self.P.vascular_unlabeled += (self.F * (self.Art.P.P_labeled / self.Art.V - self.P.vascular_unlabeled / self.V_v) +
                                       self.PS * (self.P.interestitial_unlabeled / self.V_int - self.P.vascular_unlabeled / self.V_v) +
                                       self.lambda_phy * self.P.vascular_labeled) * self.dt
 
-        self.P.vascular_labeled += (self.F * (self.Art.P / self.Art.V - self.P.vascular_labeled / self.V_v) +
+        self.P.vascular_labeled += (self.F * (self.Art.P.P_unlabeled / self.Art.V - self.P.vascular_labeled / self.V_v) +
                                     self.PS * (self.P.interestitial_labeled / self.V_int - self.P.vascular_labeled / self.V_v) -
                                     self.lambda_phy * self.P.vascular_labeled) * self.dt
 
+        ## Interestitial Volume
         self.P.interestitial_unlabeled += (self.PS*(self.P.vascular_unlabeled/self.V_v - self.P.interestitial_unlabeled/self.V_int) +
                                            self.k_off * self.RP.RP_unlabeled - self.k_on * self.RP.R * self.P.interestitial_unlabeled / self.V_int +
                                            self.lambda_phy*self.P.interestitial_labeled)*self.dt
 
         self.P.interestitial_labeled += (self.PS*(self.P.vascular_labeled/self.V_v - self.P.interestitial_labeled/self.V_int) +
-                                         self.k_off * self.RP.RP_labeled - self.k_on * self.RP.R * self.P.interestitial_labeled / self.V_int +
+                                         self.k_off * self.RP.RP_labeled - self.k_on * self.RP.R * self.P.interestitial_labeled / self.V_int -
                                          self.lambda_phy*self.P.interestitial_labeled)*self.dt
+
+        ## Receptor-Peptide bond Volume
+        self.RP.RP_unlabeled += (self.k_on * self.RP.R * self.P.interestitial_unlabeled / self.V_int -
+                                 (self.k_off+self.lambda_int) * self.RP.RP_unlabeled  +
+                                 self.lambda_phy*self.RP.RP_labeled)*self.dt
+
+        self.RP.RP_labeled += (self.k_on * self.RP.R * self.P.interestitial_labeled / self.V_int -
+                                (self.k_off + self.lambda_int) * self.RP.RP_labeled -
+                                 self.lambda_phy * self.RP.RP_labeled) * self.dt
+
+        ## Internalized Volume
+        self.P.internalized_unlabeled += (self.lambda_int*self.RP.RP_unlabeled - self.lambda_rel*self.P.internalized_unlabeled +
+                                          self.lambda_phy*self.P.internalized_labeled)*self.dt
+
+        self.P.internalized_unlabeled += (self.lambda_int * self.RP.RP_labeled - self.lambda_rel * self.P.internalized_labeled -
+                                          self.lambda_phy * self.P.internalized_labeled) * self.dt
 
 
     def RUN(self):
