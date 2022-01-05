@@ -6,6 +6,11 @@ from SimpleOrgans import *
 
 import numpy as np
 
+#TODO Storing the values of variables in list in following compartments: Master
+#TODO Adding the differential equations of Vein and Art (Master Compartment)
+
+
+## TODO the amount of P and P* should first saved in an auxilary variable and then the origian vlaues get updated
 
 class Main:
 

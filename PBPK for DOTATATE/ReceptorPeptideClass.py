@@ -18,5 +18,5 @@ class ReceptorPeptideList:
         self.RP_unlabeled = np.zeros(N, dtype='float')
         self.R = np.zeros(N, dtype='float')
 
-        self.PPR_labeled = np.zeros(N, dtype="float")
+        self.PPR_unlabeled = np.zeros(N, dtype="float")
         self.PPR_labeled = np.zeros(N, dtype="float")

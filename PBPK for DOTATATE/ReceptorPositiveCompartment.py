@@ -36,6 +36,8 @@ class ReceptorPositiveCompartment:
 
 
         self.RPList = ReceptorPeptideList(self.N_t)
+        self.PList = FreePeptideList(self.N_t)
+
 
 
     def Set_ArtVein(self, Art, Vein):
@@ -44,7 +46,7 @@ class ReceptorPositiveCompartment:
 
 
 
-    def Calculate(self):
+    def Calculate(self,t):
 
         ## Vascular Volume
         self.P.vascular_unlabeled += (self.F * (self.Art.P.P_labeled / self.Art.V - self.P.vascular_unlabeled / self.V_v) +
@@ -80,6 +82,21 @@ class ReceptorPositiveCompartment:
         self.P.internalized_unlabeled += (self.lambda_int * self.RP.RP_labeled - self.lambda_rel * self.P.internalized_labeled -
                                           self.lambda_phy * self.P.internalized_labeled) * self.dt
 
+
+
+        ## Storing the values in the list
+        self.PList.vascular_unlabeled[t] = self.P.vascular_unlabeled
+        self.PList.vascular_labeled[t] = self.P.vascular_labeled
+
+        self.PList.interestitial_unlabeled[t] = self.P.interestitial_unlabeled
+        self.PList.interestitial_labeled[t] = self.P.interestitial_labeled
+
+        self.PList.internalized_unlabeled[t] = self.P.internalized_unlabeled
+        self.PList.internalized_labeled[t] = self.P.internalized_labeled
+
+        self.RPList.RP_unlabeled[t] = self.RP.RP_unlabeled
+        self.RPList.RP_labeled[t] = self.RP.RP_labeled
+        self.RPList.R[t] = self.RP.R
 
     def RUN(self):
         pass

@@ -47,13 +47,14 @@ class ComplexCompartment:
         self.dt = simParameters["dt"]
 
         self.RPList = ReceptorPeptideList(self.N_t)
+        self.PList = FreePeptideList(self.N_t)
 
 
     def Set_ArtVein(self, Art, Vein):
         self.Art = Art
         self.Vein = Vein
 
-    def Calculate(self):
+    def Calculate(self,t):
 
         ## Vascular Volume
         self.P.vascular_unlabeled += (-self.P.vascular_unlabeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_unlabeld/self.Art.V +
@@ -107,6 +108,22 @@ class ComplexCompartment:
 
 
 
+        ## Storing the values in the list
+        self.PList.vascular_unlabeled[t] = self.P.vascular_unlabeled
+        self.PList.vascular_labeled[t] = self.P.vascular_labeled
+
+        self.PList.interestitial_unlabeled[t] = self.P.interestitial_unlabeled
+        self.PList.interestitial_labeled[t] = self.P.interestitial_labeled
+
+        self.PList.interacellular_unlabeled[t] = self.P.interacellular_unlabeled
+        self.PList.interacellular_labeled[t] = self.P.interacellular_labeled
+
+        self.PList.internalized_unlabeled[t] = self.P.internalized_unlabeled
+        self.PList.internalized_labeled[t] = self.P.internalized_labeled
+
+        self.RPList.RP_unlabeled[t] = self.RP.RP_unlabeled
+        self.RPList.RP_labeled[t] = self.RP.RP_labeled
+        self.RPList.R[t] = self.RP.R
 
     def RUN(self):
         pass
