@@ -3,13 +3,19 @@ from FreePeptideClass import FreePeptide, FreePeptideList
 class ReceptorNegativeCompartment:
     def __init__(self, RNC_parameters, variables, simParameters, Art, Vein):
 
+        self.interestitial_unlabeled_aux = None
         self.name = ""
         self.P = FreePeptide()
 
         self.P.vascular_unlabeled = variables["P_vascular_unlabeled"]
-        self.P.interstitial_unlabeled = variables["P_interstitial_unlabeled"]
-        self.P.vascular_labeled = variables["P_vascular_labeled"]
-        self.P.interstitial_labeled = variables["P_interstitial_labeled"]
+        self.P.interestitial_unlabeled = variables["P_interstitial_unlabeled"]
+        self.P.vascular_labeled = variP_ables["P_vascular_labeled"]
+        self.P.interestitial_labeled = variables["P_interstitial_labeled"]
+
+        self.P_vascular_unlabeled_aux = self.P.vascular_unlabeled
+        self.P_interestitial_unlabeled_aux = self.P.interestitial_unlabeled
+        self.P_vascular_labeled_aux = self.P.vascular_labeled
+        self.P_interestitial_labeled_aux = self.P.interestitial_labeled
 
         self.F = RNC_parameters['F']
         self.V_v = RNC_parameters['V_v']
@@ -32,34 +38,40 @@ class ReceptorNegativeCompartment:
     def Calculate(self,t):  #definint the differential equations
 
         if self.name != "Lungs":
-            self.P.vascular_unlabeled += (self.F*(self.Art.P.P_unlabeled/self.Art.V - self.P.vascular_unlabeled/self.V_v) +
+            self.P_vascular_unlabeled_aux += (self.F*(self.Art.P.P_unlabeled/self.Art.V - self.P.vascular_unlabeled/self.V_v) +
                                           self.PS*(self.P.interestitial_unlabeled/self.V_int - self.P.vascular_unlabeled/self.V_v) +
                                           self.lambda_phy*self.P.vascular_labeled)*self.dt
 
-            self.P.vascular_labeled += (self.F*(self.Art.P.P_labeled/self.Art.V - self.P.vascular_labeled/self.V_v) +
+            self.P_vascular_labeled_aux += (self.F*(self.Art.P.P_labeled/self.Art.V - self.P.vascular_labeled/self.V_v) +
                                           self.PS*(self.P.interestitial_labeled/self.V_int - self.P.vascular_labeled/self.V_v) -
                                           self.lambda_phy*self.P.vascular_labeled)*self.dt
 
-            self.P.interestitial_unlabeled += (self.PS*(self.P.vascular_unlabeled/self.V_v - self.P.interestitial_unlabeled/self.V_int) +
+            self.P_interestitial_unlabeled_aux += (self.PS*(self.P.vascular_unlabeled/self.V_v - self.P.interestitial_unlabeled/self.V_int) +
                                               self.lambda_phy*self.P.interestitial_labeled)*self.dt
 
-            self.P.interestitial_labeled += (self.PS*(self.P.vascular_labeled/self.V_v - self.P.interestitial_labeled/self.V_int) -
+            self.P_interestitial_labeled_aux += (self.PS*(self.P.vascular_labeled/self.V_v - self.P.interestitial_labeled/self.V_int) -
                                               self.lambda_phy*self.P.interestitial_labeled)*self.dt
 
         else:
-            self.P.vascular_unlabeled += (self.Art.F * (self.Vein.P / self.Vein.V - self.P.vascular_unlabeled / self.V_v) +
+            self.P_vascular_unlabeled_aux += (self.Art.F * (self.Vein.P / self.Vein.V - self.P.vascular_unlabeled / self.V_v) +
                                           self.PS * (self.P.interestitial_unlabeled / self.V_int - self.P.vascular_unlabeled / self.V_v) +
                                           self.lambda_phy * self.P.vascular_labeled) * self.dt
 
-            self.P.vascular_labeled += (self.Art.F * ( self.Vein.P / self.Vein.V - self.P.vascular_labeled / self.V_v) +
+            self.P_vascular_labeled_aux += (self.Art.F * ( self.Vein.P / self.Vein.V - self.P.vascular_labeled / self.V_v) +
                                           self.PS * (self.P.interestitial_labeled / self.V_int - self.P.vascular_labeled / self.V_v) -
                                           self.lambda_phy * self.P.vascular_labeled) * self.dt
 
-            self.P.interestitial_unlabeled += (self.PS * (self.P.vascular_unlabeled / self.V_v - self.P.interestitial_unlabeled / self.V_int) +
+            self.P_interestitial_unlabeled_aux += (self.PS * (self.P.vascular_unlabeled / self.V_v - self.P.interestitial_unlabeled / self.V_int) +
                                                self.lambda_phy * self.P.interestitial_labeled) * self.dt
 
-            self.P.interestitial_labeled += (self.PS * (self.P.vascular_labeled / self.V_v - self.P.interestitial_labeled / self.V_int) -
+            self.P_interestitial_labeled_aux += (self.PS * (self.P.vascular_labeled / self.V_v - self.P.interestitial_labeled / self.V_int) -
                                              self.lambda_phy * self.P.interestitial_labeled) * self.dt
+
+
+        self.P.vascular_unlabeled = self.P_vascular_unlabeled_aux
+        self.P.interestitial_unlabeled = self.P_interestitial_unlabeled_aux
+        self.P.vascular_labeled = self.P_vascular_labeled_aux
+        self.P.interestitial_labeled = self.P_interestitial_labeled_aux
 
 
         self.PList.vascular_unlabeled[t] = self.P.vascular_unlabeled

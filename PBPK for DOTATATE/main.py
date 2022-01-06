@@ -3,36 +3,59 @@ from ReceptorPositiveOrgans import *
 from ComplexOrgans import *
 from MasterOrgans import *
 from SimpleOrgans import *
+from Initiater.RPO_init import *
 
 import numpy as np
 
 #TODO Storing the values of variables in list in following compartments: Master
 #TODO Adding the differential equations of Vein and Art (Master Compartment)
+#TODO find the correct version of the differential equation for P_ART of then complete master compartment
 
 
 ## TODO the amount of P and P* should first saved in an auxilary variable and then the origian vlaues get updated
+## TODO Redifne the value of k_on in compartments because in the supp. of the article it ueses k_on_nonl (in the diagrams)
 
-class Main:
+class Patient:
 
-    def __init__(self):
+    def __init__(self, Patient_info):
+
+
+
+        self.patient_info = Patient_info ## gender - BSA? - V_tu - tumorType - f_tu - R_tu_density
+                                        ## R_L_density - R_S_density - R_K_density - H
+                                        ## lambda_rel - V_L, V_S, V_K, lambda_rel_NT - BW
+
+
         self.lambda_phy = 0
+        self.k_on = 0.04/0.5
+        self.k_off = 0.04
+
+        if self.patient_info.gender == "male":
+            self.F = 1.23 * 2.8 * (1-self.patient_info.H) * self.patient_info.BSA
+        else:
+            self.F = 1.23 * 2.4 * (1 - self.patient_info.H) * self.patient_info.BSA
+
+
+
         self.initial_values = {"P_vascular_unlabeled": 0,
-                               "P_interstitial_unlabeled": 0,
+                               "P_interestitial_unlabeled": 0,
                                "P_internalized_unlabeled": 0,
                                "P_interacellular_unlabeled": 0,  ## for kidney
                                "P_unlabeled": 0,  ## for Art and Vein
                                "P_vascular_labeled": 0,
-                               "P_interstitial_labeled": 0,
+                               "P_interestitial_labeled": 0,
                                "P_internalized_labeled": 0,
                                "P_interacellular_labeled": 0,  ## for kidney
                                "P_labeled": 0,
                                "PPR_labeled": 0,
-                               "PPR_unlabeled": 0}  ## for Art and Vein
+                               "PPR_unlabeled": 0,
+                               "R": 0,}  ## for Art and Vein
 
-
-        self.setOrganParameters()
-        self.setOrganVariables()
         self.setSimParameters()
+        self.setOrganVariables()
+        self.setOrganParameters()
+
+        self.Organ_var_par_init()
         self.setOrgans()
 
     def setSimParameters(self):
@@ -85,16 +108,9 @@ class Main:
         # self.Lungs_param
 
         ### Receptor Positive Organs
-        self.Liver_param = {"F": 0,
-                            "V_v": 0,
-                            "PS": 0,
-                            "V_int": 0,
-                            "k_on": 0,
-                            "k_off": 0,
-                            "lambda_int": 0,
-                            "lambda_rel": 0,
-                            "lambda_phy": self.lambda_phy}
-        # self.Spleen_param
+        self.Liver_param = None
+        self.Tumor_param = None
+        self.Spleen_param = None
         # self.Tumor_param
         # self.RedMarrow_param
         # self.GI_param
@@ -104,18 +120,7 @@ class Main:
         # self.Rest_param
 
         ### Complex Compartment Organs
-        self.Kidney_param = {"F": 0,
-                             "V_v": 0,
-                             "PS": 0,
-                             "V_int": 0,
-                             "k_on": 0,
-                             "k_off": 0,
-                             "lambda_int": 0,
-                             "lambda_rel": 0,
-                             "lambda_phy": self.lambda_phy,
-                             "GFR": 0,
-                             "theta": 0,
-                             "f_ecx": 0}
+        self.Kidney_param = None
 
         ### Master Compartment Organs
         self.Art_param = {"F": 0,
@@ -125,6 +130,12 @@ class Main:
 
         ### Simple Compartment Organd
         self.BloodProteinComplex_par = {"K_pr":0}
+
+    def Organ_var_par_init(self):
+        Tumor_init(self)
+        Liver_init(self)
+        Spleen_init(self)
+        Kidney_init(self)
 
     def setOrgans(self):
         self.Brain = Brain(self.Brain_param, self.Brain_var, self.simParameters)
@@ -161,4 +172,4 @@ class Main:
 
 
 if __name__ == "__main__":
-    PBPK_model = Main()
+    PBPK_model = Patient()

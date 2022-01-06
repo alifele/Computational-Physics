@@ -11,6 +11,11 @@ class MasterCompartment:
         self.P.P_unlabeled = variables["P_unlabeled"]
         self.P.P_labeled = variables["P_labeled"]
 
+
+        ## Note that we do not need aux variables for this compartment (because of the way we implement the equations)
+        # self.P_unlabeled_aux= self.P.P_unlabeled
+        # self.P_labeled_aux= self.P.P_labeled
+
         self.F = MC_parameters["F"]
         self.V = MC_parameters["V"]
         self.lambda_phy = MC_parameters["lambda_phy"]
@@ -69,11 +74,15 @@ class MasterCompartment:
                                       (self.OrgansList[self.Liver_ID].V_v) * self.OrgansList[self.Liver_ID].P.vascular_labeled -
                                       self.lambda_phy * self.P.P_labeled) * self.dt
 
-
             self.P.P_unlabeled = ResultofSum_unlabeled
             self.P.P_labeled = ResultofSum_labeled
 
-            self.PList.P_labeled[t] = self.P.P_labeled
-            self.PList.P_unlabeled[t] = self.P.P_unlabeled
+
+
+
+
+
+        self.PList.P_labeled[t] = self.P.P_labeled
+        self.PList.P_unlabeled[t] = self.P.P_unlabeled
 
 

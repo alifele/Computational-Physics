@@ -5,23 +5,38 @@ from ReceptorPeptideClass import *
 class ComplexCompartment:
     def __init__(self, CC_parameters, variables, simParameters):
 
+
         self.name = ""
         self.P = FreePeptide()
 
         self.P.vascular_unlabeled = variables["P_vascular_unlabeled"]
-        self.P.interstitial_unlabeled = variables["P_interstitial_unlabeled"]
+        self.P.interestitial_unlabeled = variables["P_interestitial_unlabeled"]
         self.P.internalized_unlabeled = variables["P_internalized_unlabeled"]
         self.P.interacellular_unlabeled = variables["P_interacellular_unlabeled"]
 
         self.P.vascular_labeled = variables["P_vascular_labeled"]
-        self.P.interstitial_labeled = variables["P_interstitial_labeled"]
+        self.P.interestitial_labeled = variables["P_interestitial_labeled"]
         self.P.internalized_labeled = variables["P_internalized_labeled"]
         self.P.interacellular_labeled = variables["P_interacellular_labeled"]
+
+        self.P_vascular_unlabeled_aux = self.P.vascular_unlabeled
+        self.P_interestitial_unlabeled_aux = self.P.interestitial_unlabeled
+        self.P_internalized_unlabeled_aux = self.P.internalized_unlabeled
+        self.P_interacellular_unlabeled_aux = self.P.interacellular_unlabeled
+
+        self.P_vascular_labeled_aux = self.P.vascular_labeled
+        self.P_interestitial_labeled_aux = self.P.interestitial_labeled
+        self.P_internalized_labeled_aux = self.P.internalized_labeled
+        self.P_interacellular_labeled_aux = self.P.interacellular_labeled
 
         self.RP = ReceptorPeptide()
         self.RP.RP_labeled = variables["RP_labeled"]
         self.RP.RP_unlabeled = variables["RP_unlabeled"]
         self.RP.R = variables["R"]
+
+        self.RP_labeled_aux = self.RP.RP_labeled
+        self.RP_unlabeled_aux = self.RP.RP_unlabeled
+        self.R_aux = self.RP.R
 
         self.F = CC_parameters['F']
         self.V_v = CC_parameters['V_v']
@@ -57,54 +72,72 @@ class ComplexCompartment:
     def Calculate(self,t):
 
         ## Vascular Volume
-        self.P.vascular_unlabeled += (-self.P.vascular_unlabeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_unlabeld/self.Art.V +
+        self.P_vascular_unlabeled_aux += (-self.P.vascular_unlabeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_unlabeld/self.Art.V +
                                       self.P.interacellular_unlabeled/self.V_intera*(self.F_fil - self.F_exc) +
                                       self.lambda_phy*self.P.vascular_labeled)*self.dt
 
-        self.P.vascular_labeled += (-self.P.vascular_labeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_labeld/self.Art.V -
+        self.P_vascular_labeled_aux += (-self.P.vascular_labeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_labeld/self.Art.V -
                                       self.P.interacellular_labeled/self.V_intera*(self.F_fil - self.F_exc) -
                                       self.lambda_phy*self.P.vascular_labeled)*self.dt
 
 
 
         ## Interacellular Volume
-        self.P.interacellular_unlabeled += (self.P.interestitial_unlabeled/self.V_int*(self.F_fil-self.F_exc) -
+        self.P_interacellular_unlabeled_aux += (self.P.interestitial_unlabeled/self.V_int*(self.F_fil-self.F_exc) -
                                             self.P.interacellular_unlabeled/self.V_intera*(self.F_fil-self.F_exc) +
                                             self.lambda_phy*self.P.interacellular_labeled)*self.dt
 
-        self.P.interacellular_labeled += (self.P.interestitial_labeled/self.V_int*(self.F_fil-self.F_exc) -
+        self.P_interacellular_labeled_aux += (self.P.interestitial_labeled/self.V_int*(self.F_fil-self.F_exc) -
                                             self.P.interacellular_labeled/self.V_intera*(self.F_fil-self.F_exc) -
                                             self.lambda_phy*self.P.interacellular_labeled)*self.dt
 
 
         ## Interestitial Volume
-        self.P.interestitial_unlabeled += (self.F_fil*(self.P.vascular_unlabeled/self.V_v - self.P.interestitial_unlabeled/self.V_int) -
+        self.P_interestitial_unlabeled_aux += (self.F_fil*(self.P.vascular_unlabeled/self.V_v - self.P.interestitial_unlabeled/self.V_int) -
                                            self.k_on*self.P.interestitial_unlabeled/self.V_int*self.RP.R +
                                            self.k_off*self.RP.RP_unlabeled +
                                            self.lambda_phy*self.P.interestitial_labeled)*self.dt
 
-        self.P.interestitial_labeled += (self.F_fil*(self.P.vascular_labeled/self.V_v - self.P.interestitial_labeled/self.V_int) -
+        self.P_interestitial_labeled_aux += (self.F_fil*(self.P.vascular_labeled/self.V_v - self.P.interestitial_labeled/self.V_int) -
                                            self.k_on*self.P.interestitial_labeled/self.V_int*self.RP.R +
                                            self.k_off*self.RP.RP_labeled -
                                          self.lambda_phy*self.P.interestitial_labeled)*self.dt
 
 
         ## Receptor-Peptide complex Volume
-        self.RP.RP_unlabeled += (self.k_on*self.P.interestitial_unlabeled/self.V_int*self.RP.R -
+        self.RP_unlabeled_aux += (self.k_on*self.P.interestitial_unlabeled/self.V_int*self.RP.R -
                                  self.RP.RP_unlabeled*(self.k_on+self.lambda_int) +
                                  self.lambda_phy*self.RP.RP_labeled)*self.dt
 
-        self.RP.RP_labeled += (self.k_on * self.P.interestitial_labeled / self.V_int * self.RP.R -
+        self.RP_labeled_aux += (self.k_on * self.P.interestitial_labeled / self.V_int * self.RP.R -
                                  self.RP.RP_labeled * (self.k_on + self.lambda_int) -
                                  self.lambda_phy * self.RP.RP_labeled) * self.dt
 
 
         ## Internalized Volume
-        self.P.internalized_unlabeled += (self.lambda_int*self.RP.RP_unlabeled - self.lambda_rel*self.P.internalized_unlabeled +
+        self.P_internalized_unlabeled_aux += (self.lambda_int*self.RP.RP_unlabeled - self.lambda_rel*self.P.internalized_unlabeled +
                                           self.lambda_phy*self.P.internalized_labeled)*self.dt
 
-        self.P.internalized_labeled += (self.lambda_int * self.RP.RP_labeled - self.lambda_rel * self.P.internalized_labeled -
+        self.P_internalized_labeled_aux += (self.lambda_int * self.RP.RP_labeled - self.lambda_rel * self.P.internalized_labeled -
                                           self.lambda_phy * self.P.internalized_labeled) * self.dt
+
+
+
+
+        ### Saving aux values in the premenant variables
+
+        self.P.vascular_unlabeled = self.P_vascular_unlabeled_aux
+        self.P.interestitial_unlabeled = self.P_interestitial_unlabeled_aux
+        self.P.internalized_unlabeled = self.P_internalized_unlabeled_aux
+        self.P.interacellular_unlabeled = self.P_interacellular_unlabeled_aux
+
+        self.P.vascular_labeled = self.P_vascular_labeled_aux
+        self.P.interestitial_labeled = self.P_interestitial_labeled_aux
+        self.P.internalized_labeled = self.P_internalized_labeled_aux
+        self.P.interacellular_labeled = self.P_interacellular_labeled_aux
+        self.RP.RP_unlabeled = self.RP_unlabeled_aux
+        self.RP.RP_labeled = self.RP_unlabeled_aux
+
 
 
 

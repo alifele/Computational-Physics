@@ -11,6 +11,9 @@ class SimpleCompartment:
         self.PPR.PPR_labeled = variables["PPR_labeled"]
         self.PPR.PPR_unlabeled = variables["PPR_unlabeled"]
 
+
+        ### We do not need the aux equations for this compartment
+
         self.K_pr = SC_parameters["K_pr"]
         self.lambda_phys = SC_parameters["lambda_phys"]
 
@@ -35,7 +38,7 @@ class SimpleCompartment:
 
 
         ### Storing the values in the corresponding list
-        self.PPRList.PPR_unlabeled[t]  = self.PPR.PPR_unlabeled
+        self.PPRList.PPR_unlabeled[t] = self.PPR.PPR_unlabeled
         self.PPRList.PPR_labeled[t] = self.PPR.PPR_labeled
 
 
