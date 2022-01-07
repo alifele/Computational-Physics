@@ -3,7 +3,7 @@ from ReceptorPositiveOrgans import *
 from ComplexOrgans import *
 from MasterOrgans import *
 from SimpleOrgans import *
-from Initiater.RPO_init import *
+from Initiater.Organ_init import *
 
 import numpy as np
 
@@ -14,6 +14,8 @@ import numpy as np
 
 ## TODO the amount of P and P* should first saved in an auxilary variable and then the origian vlaues get updated
 ## TODO Redifne the value of k_on in compartments because in the supp. of the article it ueses k_on_nonl (in the diagrams)
+## TODO when I want to convert [R] to R, what is the volume that I need to multiply at. is that V_total (they have used that in the case of tumour)?
+## TODO Add Vein, Arteries, ProteinPeptideComplex initiator to the OrganInit.py file
 
 class Patient:
 
@@ -30,10 +32,13 @@ class Patient:
         self.k_on = 0.04/0.5
         self.k_off = 0.04
 
+
         if self.patient_info.gender == "male":
-            self.F = 1.23 * 2.8 * (1-self.patient_info.H) * self.patient_info.BSA
+            self.V_p = 2.8 * (1-self.patient_info.H) * self.patient_info.BSA
         else:
-            self.F = 1.23 * 2.4 * (1 - self.patient_info.H) * self.patient_info.BSA
+            self.V_p = 2.4 * (1 - self.patient_info.H) * self.patient_info.BSA
+
+        self.F = 1.23 * self.V_p
 
 
 
@@ -95,41 +100,35 @@ class Patient:
 
     def setOrganParameters(self):
         ### Receptor Negative Organs
-        self.Brain_param = {"F": 0,
-                           "V_v": 0,
-                           "PS": 0,
-                           "V_int": 0,
-                           "lambda_phy": self.lambda_phy}
-        #
-        # self.Heart_param
-        # self.Bone_param
-        # self.Skin_param
-        # self.Asipose_param
-        # self.Lungs_param
+        self.Brain_param = None
+        self.Heart_param = None
+        self.Bone_param = None
+        self.Skin_param = None
+        self.Asipose_param = None
+        self.Lungs_param = None
 
         ### Receptor Positive Organs
         self.Liver_param = None
         self.Tumor_param = None
         self.Spleen_param = None
-        # self.Tumor_param
-        # self.RedMarrow_param
-        # self.GI_param
-        # self.Muscle_param
-        # self.ProstateUterus_param
-        # self.Adrenal_param
-        # self.Rest_param
+        self.RedMarrow_param = None
+        self.GI_param = None
+        self.Muscle_param = None
+        self.ProstateUterus_param = None
+        self.Adrenal_param = None
+        self.Rest_param = None
 
         ### Complex Compartment Organs
         self.Kidney_param = None
 
         ### Master Compartment Organs
-        self.Art_param = {"F": 0,
-                          "V": 0}
+        # self.Art_param = {"F": 0,
+        #                   "V": 0}
         # self.Vein_param =
 
 
         ### Simple Compartment Organd
-        self.BloodProteinComplex_par = {"K_pr":0}
+        # self.BloodProteinComplex_par = {"K_pr":0}
 
     def Organ_var_par_init(self):
         Tumor_init(self)
@@ -139,21 +138,19 @@ class Patient:
 
     def setOrgans(self):
         self.Brain = Brain(self.Brain_param, self.Brain_var, self.simParameters)
-        # self.Heart = 0
-        # self.Bone = 0
-        # self.Skin = 0
-        # self.Adipose = 0
-        # self.Lungs = 0
+        self.Heart = Heart(self.Brain_param, self.Brain_var, self.simParameters)
+        self.Bone = Bone(self.Brain_param, self.Brain_var, self.simParameters)
+        self.Skin = Skin(self.Brain_param, self.Brain_var, self.simParameters)
+        self.Adipose = Adipose(self.Brain_param, self.Brain_var, self.simParameters)
+        self.Lungs = Lungs(self.Brain_param, self.Brain_var, self.simParameters)
 
         self.Liver = Liver(self.Liver_param, self.Liver_var, self.simParameters)
-        # self.Spleen = 0
-        # self.Tumor = 0
-        # self.RedMarrow = 0
-        # self.GI = 0
-        # self.Muscle = 0
-        # self.ProstateUterus = 0
-        # self.Rest = 0
-
+        self.Spleen = Spleen(self.Liver_param, self.Liver_var, self.simParameters)
+        self.Tumor = Tumor(self.Liver_param, self.Liver_var, self.simParameters)
+        self.RedMarrow = RedMarrow(self.Liver_param, self.Liver_var, self.simParameters)
+        self.GI = GI(self.Liver_param, self.Liver_var, self.simParameters)
+        self.Muscle = Muscle(self.Liver_param, self.Liver_var, self.simParameters)
+        self.ProstateUterus = ProstateUterus(self.Liver_param, self.Liver_var, self.simParameters)
         self.Kidney = Kidney(self.Kidney_param, self.Liver_var, self.simParameters)
 
         self.PlasmaProteinComplex = BloodPlasmaProteinComplex(self.Kidney_param, self.Liver_var, self.simParameters)
@@ -164,8 +161,9 @@ class Patient:
                            self.GI, self.ProstateUterus, self.Rest, self.Kidney, self.PlasmaProtein]
 
 
-        self.Art = Art(self.Art_param, self.Art_var, self.simParameters, self.OrgansList)
+        #self.Art = Art(self.Art_param, self.Art_var, self.simParameters, self.OrgansList)
         # self.Vein = 0
+        # self.Rest = 0
 
         for Organ in self.OrgansList:  ## Adding the Vein and Areterial information to Organs
             Organ.Set_ArtVein(self.Art, self.Vein)

@@ -12,7 +12,7 @@ class Data:
     MuscleData = {
         "v_v": 0,
         "v_int": 0,
-        "k": 0.2,
+        "k": 0.02,
     }
 
     KidneyData = {
@@ -21,7 +21,7 @@ class Data:
         "lambda_int": 1.7 * TumorData["lambda_int"]
     }
 
-    ## k_L = 100*k_mu and this equation is included in RPO_init.py
+    ## k_L = 100*k_mu and this equation is included in Organ_init.py
     LiverData = {
         "v_v": 0.085,
         "v_int": 0.2,
@@ -35,6 +35,8 @@ class Data:
         "k": MuscleData["k_mu"] * 100,
         "lambda_int": KidneyData["lambda_int"]
     }
+
+
 
 
 
