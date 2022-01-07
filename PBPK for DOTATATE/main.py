@@ -3,7 +3,7 @@ from ReceptorPositiveOrgans import *
 from ComplexOrgans import *
 from MasterOrgans import *
 from SimpleOrgans import *
-from Initiater.Organ_init import *
+from initiator.Organ_init import *
 
 import numpy as np
 
