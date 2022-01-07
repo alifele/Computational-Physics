@@ -13,6 +13,7 @@ def Tumor_init(Patient):
         k_tu = Data.TumorData["k_menin"]  ## for PS calculation
 
     Patient.Tumor_param = {
+        "V_total": Patient.patient_info.V_tu,
         "F": Patient.patient_info.f_tu * (1 - Patient.patient_info.H) * Patient.patient_info.V_tu,
         "V_v": v_tu_v * Patient.patient_info.V_tu,
         "PS": k_tu * Patient.patient_info.V_tu,
@@ -28,6 +29,7 @@ def Tumor_init(Patient):
 
 def Liver_init(Patient):
     Patient.Liver_param = {
+        "V_total": Patient.patient_info.V_L,
         "F": 0.065 * Patient.F,
         "V_v": Data.LiverData["v_v"] * Patient.patient_info.V_L,
         "PS": Data.LiverData["k"] * Patient.patient_info.V_L,
@@ -43,6 +45,7 @@ def Liver_init(Patient):
 
 def Spleen_init(Patient):
     Patient.Spleen_param = {
+        "V_total": Patient.patient_info.V_S,
         "F": 0.03 * Patient.F,
         "V_v": Data.SpleenData["v_v"] * Patient.patient_info.V_S,
         "PS": Data.SpleenData["k"] * Patient.patient_info.V_S,
@@ -58,6 +61,7 @@ def Spleen_init(Patient):
 
 def Kidney_init(Patient):
     Patient.Kidney_param = {
+        "V_total": Patient.patient_info.V_K,
         "F": 0.19 * Patient.F,
         "V_v": Data.KidneyData["v_v"] * Patient.patient_info.V_K,
         "V_int": Data.KidneyData["v_int"] * Patient.patient_info.V_K,
@@ -292,3 +296,82 @@ def Muscle_init(Patient):
         "k": k,
     }
     Patient.Muscle_var["R"] = R_density * Patient.Muscle_param["V_total"]
+
+
+def Art_init(Patient):
+    V_total = (0.06 + 0.045)*Patient.V_p
+    F = Patient.F
+
+    Patient.Art_param = {
+        "V_total": V_total,
+        "F": F
+    }
+
+
+def Vein_init(Patient):
+    V_total = (0.18 + 0.045) * Patient.V_p
+    F = Patient.F
+
+    Patient.Art_param = {
+        "V_total": V_total,
+        "F": F
+    }
+
+
+def Rest_init(Patient):
+    V_body = Patient.patient_info.BW   ## 1kg = 1 lit
+    V_total_organs = 0.0
+    V_v_organs = 0.0
+    F_organs = 0.0
+    for organ in Patient.OrgansList:
+        if organ.name == "Tumor":
+            continue
+        V_total_organs += organ.parameters["V_total"]
+        V_v_organs += organ.parameters["V_v"]
+        F_organs += organ.parameters["F"]
+
+    V_total = V_body - V_total_organs
+    V_v = Patient.V_p - V_v_organs
+    alpha = 3.7 ## interestitial to vascular volume
+    V_int = alpha * V_total
+    F = Patient.F - F_organs
+    k = Data.MuscleData['k']
+    R_density = Patient.patient_info.R_rest_density
+
+
+    Patient.Rest_param = {
+        "V_total": V_total,
+        "V_v": V_v,
+        "V_int": V_int,
+        "F": F,
+        "k": k,
+    }
+    Patient.Rest_var["R"] = R_density * Patient.Rest_param["V_total"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

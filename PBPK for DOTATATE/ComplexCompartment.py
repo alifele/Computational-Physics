@@ -38,6 +38,7 @@ class ComplexCompartment:
         self.RP_unlabeled_aux = self.RP.RP_unlabeled
         self.R_aux = self.RP.R
 
+        self.parameters = CC_parameters
         self.F = CC_parameters['F']
         self.V_v = CC_parameters['V_v']
         self.PS = CC_parameters['PS']

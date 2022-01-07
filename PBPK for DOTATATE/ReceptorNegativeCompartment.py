@@ -17,6 +17,7 @@ class ReceptorNegativeCompartment:
         self.P_vascular_labeled_aux = self.P.vascular_labeled
         self.P_interestitial_labeled_aux = self.P.interestitial_labeled
 
+        self.parameters = RNC_parameters
         self.F = RNC_parameters['F']
         self.V_v = RNC_parameters['V_v']
         self.PS = RNC_parameters['PS']

@@ -15,7 +15,7 @@ class MasterCompartment:
         ## Note that we do not need aux variables for this compartment (because of the way we implement the equations)
         # self.P_unlabeled_aux= self.P.P_unlabeled
         # self.P_labeled_aux= self.P.P_labeled
-
+        self.parameters = MC_parameters
         self.F = MC_parameters["F"]
         self.V = MC_parameters["V"]
         self.lambda_phy = MC_parameters["lambda_phy"]

@@ -33,7 +33,7 @@ class ReceptorPositiveCompartment:
         self.RP_unlabeled_aux = self.RP.RP_unlabeled
         self.R_aux = self.RP.R
 
-
+        self.parameters = RPC_parameters
         self.F = RPC_parameters['F']
         self.V_v = RPC_parameters['V_v']
         self.PS = RPC_parameters['PS']

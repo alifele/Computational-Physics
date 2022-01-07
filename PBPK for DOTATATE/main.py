@@ -24,8 +24,8 @@ class Patient:
 
 
         self.patient_info = Patient_info ## gender - BSA? - V_tu - tumorType - f_tu - R_tu_density
-                                        ## R_L_density - R_S_density - R_K_density - H
-                                        ## lambda_rel - V_L, V_S, V_K, lambda_rel_NT - BW
+                                        ## R_L_density - R_S_density - R_K_density - R_rest_density - H
+                                        ## lambda_rel - V_L, V_S, V_K, lambda_rel_NT - BW - V_body(1g=1ml)
 
 
         self.lambda_phy = 0
@@ -59,8 +59,6 @@ class Patient:
         self.setSimParameters()
         self.setOrganVariables()
         self.setOrganParameters()
-
-        self.Organ_var_par_init()
         self.setOrgans()
 
     def setSimParameters(self):
@@ -104,7 +102,7 @@ class Patient:
         self.Heart_param = None
         self.Bone_param = None
         self.Skin_param = None
-        self.Asipose_param = None
+        self.Adipose_param = None
         self.Lungs_param = None
 
         ### Receptor Positive Organs
@@ -116,54 +114,73 @@ class Patient:
         self.Muscle_param = None
         self.ProstateUterus_param = None
         self.Adrenal_param = None
-        self.Rest_param = None
 
         ### Complex Compartment Organs
         self.Kidney_param = None
 
         ### Master Compartment Organs
-        # self.Art_param = {"F": 0,
-        #                   "V": 0}
-        # self.Vein_param =
+        self.Art_param = None
+        self.Vein_param = None
+        self.Rest_param = None
 
-
-        ### Simple Compartment Organd
+        ### Simple Compartment Organs
         # self.BloodProteinComplex_par = {"K_pr":0}
 
-    def Organ_var_par_init(self):
+
+    def setOrgans(self):
+
+        Brain_init(self)
+        Heart_init(self)
+        Bone_init(self)
+        Skin_init(self)
+        Adipose_init(self)
+        Lungs_init(self)
+
         Tumor_init(self)
         Liver_init(self)
         Spleen_init(self)
         Kidney_init(self)
+        RedMarrow_init(self)
+        GI_init(self)
+        Muscle_init(self)
+        ProstateUterus_init(self)
+        PlasmaProteinComplex(self)
 
-    def setOrgans(self):
+
+
+
         self.Brain = Brain(self.Brain_param, self.Brain_var, self.simParameters)
-        self.Heart = Heart(self.Brain_param, self.Brain_var, self.simParameters)
-        self.Bone = Bone(self.Brain_param, self.Brain_var, self.simParameters)
-        self.Skin = Skin(self.Brain_param, self.Brain_var, self.simParameters)
-        self.Adipose = Adipose(self.Brain_param, self.Brain_var, self.simParameters)
-        self.Lungs = Lungs(self.Brain_param, self.Brain_var, self.simParameters)
+        self.Heart = Heart(self.Heart_param, self.Heart_var, self.simParameters)
+        self.Bone = Bone(self.Bone_param, self.Bone_var, self.simParameters)
+        self.Skin = Skin(self.Skin_param, self.Skin_var, self.simParameters)
+        self.Adipose = Adipose(self.Adipose_param, self.Adipose_var, self.simParameters)
+        self.Lungs = Lungs(self.Lungs_param, self.Lungs_var, self.simParameters)
 
         self.Liver = Liver(self.Liver_param, self.Liver_var, self.simParameters)
-        self.Spleen = Spleen(self.Liver_param, self.Liver_var, self.simParameters)
-        self.Tumor = Tumor(self.Liver_param, self.Liver_var, self.simParameters)
-        self.RedMarrow = RedMarrow(self.Liver_param, self.Liver_var, self.simParameters)
-        self.GI = GI(self.Liver_param, self.Liver_var, self.simParameters)
-        self.Muscle = Muscle(self.Liver_param, self.Liver_var, self.simParameters)
-        self.ProstateUterus = ProstateUterus(self.Liver_param, self.Liver_var, self.simParameters)
-        self.Kidney = Kidney(self.Kidney_param, self.Liver_var, self.simParameters)
+        self.Spleen = Spleen(self.Spleen_param, self.Spleen_var, self.simParameters)
+        self.Tumor = Tumor(self.Tumor_param, self.Tumor_var, self.simParameters)
+        self.RedMarrow = RedMarrow(self.RedMarrow_param, self.RedMarrow_var, self.simParameters)
+        self.GI = GI(self.GI_param, self.GI_var, self.simParameters)
+        self.Muscle = Muscle(self.Muscle_param, self.Muscle_var, self.simParameters)
+        self.ProstateUterus = ProstateUterus(self.ProstateUterus_param, self.ProstateUterus_var, self.simParameters)
+        self.Kidney = Kidney(self.Kidney_param, self.Kidney_var, self.simParameters)
+        self.PlasmaProteinComplex = BloodPlasmaProteinComplex(self.PlasmaProteinComplex_param, self.PlasmaProteinComplex_var, self.simParameters)
 
-        self.PlasmaProteinComplex = BloodPlasmaProteinComplex(self.Kidney_param, self.Liver_var, self.simParameters)
 
 
         self.OrgansList = [self.Brain, self.Heart, self.Bone, self.Skin, self.Adipose,
                            self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
-                           self.GI, self.ProstateUterus, self.Rest, self.Kidney, self.PlasmaProtein]
+                           self.GI, self.ProstateUterus, self.Kidney, self.PlasmaProteinComplex]
 
+        Rest_init(self)
+        self.Rest = Kidney(self.Rest_param, self.Rest_var, self.simParameters)
+        self.OrgansList.append(self.Rest)
 
-        #self.Art = Art(self.Art_param, self.Art_var, self.simParameters, self.OrgansList)
-        # self.Vein = 0
-        # self.Rest = 0
+        Vein_init(self)
+        Art_init(self)
+        self.Art = Art(self.Art_param, self.Art_var, self.simParameters, self.OrgansList)
+        self.Vein = Vein(self.Vein_param, self.Vein_var, self.simParameters, self.OrgansList)
+
 
         for Organ in self.OrgansList:  ## Adding the Vein and Areterial information to Organs
             Organ.Set_ArtVein(self.Art, self.Vein)

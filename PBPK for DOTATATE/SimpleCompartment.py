@@ -13,7 +13,7 @@ class SimpleCompartment:
 
 
         ### We do not need the aux equations for this compartment
-
+        self.parameters = SC_parameters
         self.K_pr = SC_parameters["K_pr"]
         self.lambda_phys = SC_parameters["lambda_phys"]
 
