@@ -7,15 +7,10 @@ from Initiater.Organ_init import *
 
 import numpy as np
 
-#TODO Storing the values of variables in list in following compartments: Master
-#TODO Adding the differential equations of Vein and Art (Master Compartment)
-#TODO find the correct version of the differential equation for P_ART of then complete master compartment
 
-
-## TODO the amount of P and P* should first saved in an auxilary variable and then the origian vlaues get updated
 ## TODO Redifne the value of k_on in compartments because in the supp. of the article it ueses k_on_nonl (in the diagrams)
-## TODO when I want to convert [R] to R, what is the volume that I need to multiply at. is that V_total (they have used that in the case of tumour)?
-## TODO Add Vein, Arteries, ProteinPeptideComplex initiator to the OrganInit.py file
+
+
 
 class Patient:
 
@@ -25,7 +20,7 @@ class Patient:
 
         self.patient_info = Patient_info ## gender - BSA? - V_tu - tumorType - f_tu - R_tu_density
                                         ## R_L_density - R_S_density - R_K_density - R_rest_density - H
-                                        ## lambda_rel - V_L, V_S, V_K, lambda_rel_NT - BW - V_body(1g=1ml)
+                                        ## lambda_rel - V_L, V_S, V_K, lambda_rel_NT - BW - V_body(1g=1ml) - k_pr
 
 
         self.lambda_phy = 0
@@ -124,7 +119,7 @@ class Patient:
         self.Rest_param = None
 
         ### Simple Compartment Organs
-        # self.BloodProteinComplex_par = {"K_pr":0}
+        self.BloodProteinComplex_param = None
 
 
     def setOrgans(self):
@@ -144,7 +139,7 @@ class Patient:
         GI_init(self)
         Muscle_init(self)
         ProstateUterus_init(self)
-        PlasmaProteinComplex(self)
+        BloodProteinComplex_init(self)
 
 
 
@@ -164,13 +159,13 @@ class Patient:
         self.Muscle = Muscle(self.Muscle_param, self.Muscle_var, self.simParameters)
         self.ProstateUterus = ProstateUterus(self.ProstateUterus_param, self.ProstateUterus_var, self.simParameters)
         self.Kidney = Kidney(self.Kidney_param, self.Kidney_var, self.simParameters)
-        self.PlasmaProteinComplex = BloodPlasmaProteinComplex(self.PlasmaProteinComplex_param, self.PlasmaProteinComplex_var, self.simParameters)
+        self.BloodProteinComplex = BloodProteinComplex(self.BloodProteinComplex_param, self.BloodProteinComplex_var, self.simParameters)
 
 
 
         self.OrgansList = [self.Brain, self.Heart, self.Bone, self.Skin, self.Adipose,
                            self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
-                           self.GI, self.ProstateUterus, self.Kidney, self.PlasmaProteinComplex]
+                           self.GI, self.ProstateUterus, self.Kidney, self.BloodProteinComplex]
 
         Rest_init(self)
         self.Rest = Kidney(self.Rest_param, self.Rest_var, self.simParameters)

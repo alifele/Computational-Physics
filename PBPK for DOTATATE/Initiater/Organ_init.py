@@ -104,6 +104,7 @@ def ProstateUterus_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.ProstateUterus_var["R"] = R_density * Patient.ProstateUterus_param["V_total"]
 
@@ -123,6 +124,7 @@ def Lungs_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Lungs_var["R"] = R_density * Patient.Lungs_param["V_total"]
 
@@ -142,6 +144,7 @@ def Adrenals_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Adrenals_var["R"] = R_density * Patient.Adrenals_param["V_total"]
 
@@ -160,6 +163,7 @@ def GI_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.GI_var["R"] = R_density * Patient.GI_param["V_total"]
 
@@ -178,6 +182,7 @@ def Skin_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Skin_var["R"] = R_density * Patient.Skin_param["V_total"]
 
@@ -196,6 +201,7 @@ def Adipose_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Adipose_var["R"] = R_density * Patient.Adipose_param["V_total"]
 
@@ -216,6 +222,7 @@ def RedMarrow_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.RedMarrow_var["R"] = R_density * Patient.RedMarrow_param["V_total"]
 
@@ -235,6 +242,7 @@ def Bone_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Bone_var["R"] = R_density * Patient.Bone_param["V_total"]
 
@@ -255,6 +263,7 @@ def Heart_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Heart_var["R"] = R_density * Patient.Heart_param["V_total"]
 
@@ -274,6 +283,7 @@ def Brain_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Brain_var["R"] = R_density * Patient.Brain_param["V_total"]
 
@@ -294,6 +304,7 @@ def Muscle_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Muscle_var["R"] = R_density * Patient.Muscle_param["V_total"]
 
@@ -304,7 +315,8 @@ def Art_init(Patient):
 
     Patient.Art_param = {
         "V_total": V_total,
-        "F": F
+        "F": F,
+        "lambda_phy": Patient.lambda_phy
     }
 
 
@@ -314,7 +326,8 @@ def Vein_init(Patient):
 
     Patient.Art_param = {
         "V_total": V_total,
-        "F": F
+        "F": F,
+        "lambda_phy": Patient.lambda_phy
     }
 
 
@@ -345,8 +358,17 @@ def Rest_init(Patient):
         "V_int": V_int,
         "F": F,
         "k": k,
+        "lambda_phy": Patient.lambda_phy
     }
     Patient.Rest_var["R"] = R_density * Patient.Rest_param["V_total"]
+
+
+def BloodProteinComplex_init(Patient):
+    Patient.BloodProteinComplex_param = {
+        "k_pr": Patient.patient_info.k_pr,
+        "lambda_phy": Patient.lambda_phy
+    }
+
 
 
 
