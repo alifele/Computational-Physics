@@ -41,7 +41,6 @@ class ComplexCompartment:
         self.parameters = CC_parameters
         self.F = CC_parameters['F']
         self.V_v = CC_parameters['V_v']
-        self.PS = CC_parameters['PS']
         self.V_int = CC_parameters['V_int']
         self.V_intera = CC_parameters["V_int"]
         self.k_on = CC_parameters['k_on']
@@ -50,12 +49,12 @@ class ComplexCompartment:
         self.lambda_rel = CC_parameters['lambda_rel']
         self.lambda_phy = CC_parameters['lambda_phy']
         self.GFR = CC_parameters['GFR']
-        self.theta = CC_parameters['theta']
+        self.phi = CC_parameters['phi']
         self.f_exc = CC_parameters['f_exc']
 
 
-        self.F_fil = 0
-        self.F_exc = 0
+        self.F_fil = self.GFR * self.phi
+        self.F_exc = self.F_fil * self.f_exc
 
         self.tmax = simParameters["tmax"]
         self.level = simParameters["level"]
@@ -73,11 +72,11 @@ class ComplexCompartment:
     def Calculate(self,t):
 
         ## Vascular Volume
-        self.P_vascular_unlabeled_aux += (-self.P.vascular_unlabeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_unlabeld/self.Art.V +
+        self.P_vascular_unlabeled_aux += (-self.P.vascular_unlabeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_unlabeled/self.Art.V +
                                       self.P.interacellular_unlabeled/self.V_intera*(self.F_fil - self.F_exc) +
                                       self.lambda_phy*self.P.vascular_labeled)*self.dt
 
-        self.P_vascular_labeled_aux += (-self.P.vascular_labeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_labeld/self.Art.V -
+        self.P_vascular_labeled_aux += (-self.P.vascular_labeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_labeled/self.Art.V -
                                       self.P.interacellular_labeled/self.V_intera*(self.F_fil - self.F_exc) -
                                       self.lambda_phy*self.P.vascular_labeled)*self.dt
 

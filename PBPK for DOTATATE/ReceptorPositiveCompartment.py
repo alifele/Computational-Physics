@@ -9,10 +9,10 @@ class ReceptorPositiveCompartment:
         self.P = FreePeptide()
 
         self.P.vascular_unlabeled = variables["P_vascular_unlabeled"]
-        self.P.interestitial_unlabeled = variables["P_interstitial_unlabeled"]
+        self.P.interestitial_unlabeled = variables["P_interestitial_unlabeled"]
         self.P.internalized_unlabeled = variables["P_internalized_unlabeled"]
         self.P.vascular_labeled = variables["P_vascular_labeled"]
-        self.P.interestitial_labeled = variables["P_interstitial_labeled"]
+        self.P.interestitial_labeled = variables["P_interestitial_labeled"]
         self.P.internalized_labeled = variables["P_internalized_labeled"]
 
         self.P_vascular_unlabeled_aux = self.P.vascular_unlabeled

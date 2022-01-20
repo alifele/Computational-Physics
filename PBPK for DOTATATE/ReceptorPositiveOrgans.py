@@ -67,6 +67,6 @@ class Adrenals(ReceptorPositiveCompartment):
         
         
 class Rest(ReceptorPositiveCompartment):
-    def __init__(self, RPC_parameters, variables, simParameters, Art, Vein):
-        super().__init__(RPC_parameters, variables, simParameters, Art, Vein)
+    def __init__(self, RPC_parameters, variables, simParameters):
+        super().__init__(RPC_parameters, variables, simParameters)
         self.name = "Rest"

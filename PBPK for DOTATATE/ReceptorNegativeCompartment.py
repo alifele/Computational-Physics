@@ -1,16 +1,16 @@
 import numpy as np
 from FreePeptideClass import FreePeptide, FreePeptideList
 class ReceptorNegativeCompartment:
-    def __init__(self, RNC_parameters, variables, simParameters, Art, Vein):
+    def __init__(self, RNC_parameters, variables, simParameters):
 
         self.interestitial_unlabeled_aux = None
         self.name = ""
         self.P = FreePeptide()
 
         self.P.vascular_unlabeled = variables["P_vascular_unlabeled"]
-        self.P.interestitial_unlabeled = variables["P_interstitial_unlabeled"]
-        self.P.vascular_labeled = variP_ables["P_vascular_labeled"]
-        self.P.interestitial_labeled = variables["P_interstitial_labeled"]
+        self.P.interestitial_unlabeled = variables["P_interestitial_unlabeled"]
+        self.P.vascular_labeled = variables["P_vascular_labeled"]
+        self.P.interestitial_labeled = variables["P_interestitial_labeled"]
 
         self.P_vascular_unlabeled_aux = self.P.vascular_unlabeled
         self.P_interestitial_unlabeled_aux = self.P.interestitial_unlabeled
@@ -54,11 +54,11 @@ class ReceptorNegativeCompartment:
                                               self.lambda_phy*self.P.interestitial_labeled)*self.dt
 
         else:
-            self.P_vascular_unlabeled_aux += (self.Art.F * (self.Vein.P / self.Vein.V - self.P.vascular_unlabeled / self.V_v) +
+            self.P_vascular_unlabeled_aux += (self.Art.F * (self.Vein.P.P_labeled / self.Vein.V - self.P.vascular_unlabeled / self.V_v) +
                                           self.PS * (self.P.interestitial_unlabeled / self.V_int - self.P.vascular_unlabeled / self.V_v) +
                                           self.lambda_phy * self.P.vascular_labeled) * self.dt
 
-            self.P_vascular_labeled_aux += (self.Art.F * ( self.Vein.P / self.Vein.V - self.P.vascular_labeled / self.V_v) +
+            self.P_vascular_labeled_aux += (self.Art.F * ( self.Vein.P.P_labeled / self.Vein.V - self.P.vascular_labeled / self.V_v) +
                                           self.PS * (self.P.interestitial_labeled / self.V_int - self.P.vascular_labeled / self.V_v) -
                                           self.lambda_phy * self.P.vascular_labeled) * self.dt
 

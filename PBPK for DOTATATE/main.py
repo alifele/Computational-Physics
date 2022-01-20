@@ -4,7 +4,8 @@ from ComplexOrgans import *
 from MasterOrgans import *
 from SimpleOrgans import *
 from initiator.Organ_init import *
-
+from Patient_info import Patient_info
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -18,12 +19,10 @@ class Patient:
 
 
 
-        self.patient_info = Patient_info ## gender - BSA? - V_tu - tumorType - f_tu - R_tu_density
-                                        ## R_L_density - R_S_density - R_K_density - R_rest_density - H
-                                        ## lambda_rel - V_L, V_S, V_K, lambda_rel_NT - BW - V_body(1g=1ml) - k_pr
+        self.patient_info = Patient_info
 
 
-        self.lambda_phy = 0
+        self.lambda_phy = np.log(2)/(6.647 * 3600 * 24)
         self.k_on = 0.04/0.5
         self.k_off = 0.04
 
@@ -47,9 +46,11 @@ class Patient:
                                "P_internalized_labeled": 0,
                                "P_interacellular_labeled": 0,  ## for kidney
                                "P_labeled": 0,
+                               "RP_labeled": 0,
+                               "RP_unlabeled": 0,
                                "PPR_labeled": 0,
                                "PPR_unlabeled": 0,
-                               "R": 0,}  ## for Art and Vein
+                               "R": 0}  ## for Art and Vein
 
         self.setSimParameters()
         self.setOrganVariables()
@@ -57,14 +58,15 @@ class Patient:
         self.setOrgans()
 
     def setSimParameters(self):
-        tmax = 0
-        level = 0
+        tmax = 1
+        level = 8
         N_t = np.power(2, level)
-        dt = tmax / N_t
+        dt = tmax / (N_t-1)
         self.simParameters = {"tmax": tmax,
                               "level": level,
                               "N_t": N_t,
                               "dt": dt}
+        self.tList = np.linspace(0,tmax,N_t)
 
     def setOrganVariables(self):
         self.Brain_var = self.initial_values
@@ -92,13 +94,6 @@ class Patient:
         self.BloodProteinComplex_var = self.initial_values
 
     def setOrganParameters(self):
-        ### Receptor Negative Organs
-        self.Brain_param = None
-        self.Heart_param = None
-        self.Bone_param = None
-        self.Skin_param = None
-        self.Adipose_param = None
-        self.Lungs_param = None
 
         ### Receptor Positive Organs
         self.Liver_param = None
@@ -109,6 +104,15 @@ class Patient:
         self.Muscle_param = None
         self.ProstateUterus_param = None
         self.Adrenal_param = None
+
+        ### Receptor Negative Organs
+        self.Brain_param = None
+        self.Heart_param = None
+        self.Bone_param = None
+        self.Skin_param = None
+        self.Adipose_param = None
+        self.Lungs_param = None
+
 
         ### Complex Compartment Organs
         self.Kidney_param = None
@@ -124,13 +128,6 @@ class Patient:
 
     def setOrgans(self):
 
-        Brain_init(self)
-        Heart_init(self)
-        Bone_init(self)
-        Skin_init(self)
-        Adipose_init(self)
-        Lungs_init(self)
-
         Tumor_init(self)
         Liver_init(self)
         Spleen_init(self)
@@ -142,9 +139,17 @@ class Patient:
         BloodProteinComplex_init(self)
 
 
+        #Brain_init(self)
+        Heart_init(self)
+        Bone_init(self)
+        Skin_init(self)
+        Adipose_init(self)
+        Lungs_init(self)
 
 
-        self.Brain = Brain(self.Brain_param, self.Brain_var, self.simParameters)
+
+
+        #self.Brain = Brain(self.Brain_param, self.Brain_var, self.simParameters)
         self.Heart = Heart(self.Heart_param, self.Heart_var, self.simParameters)
         self.Bone = Bone(self.Bone_param, self.Bone_var, self.simParameters)
         self.Skin = Skin(self.Skin_param, self.Skin_var, self.simParameters)
@@ -163,12 +168,16 @@ class Patient:
 
 
 
-        self.OrgansList = [self.Brain, self.Heart, self.Bone, self.Skin, self.Adipose,
+        # self.OrgansList = [self.Brain, self.Heart, self.Bone, self.Skin, self.Adipose,
+        #                    self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
+        #                    self.GI, self.ProstateUterus, self.Kidney, self.BloodProteinComplex]
+
+        self.OrgansList = [self.Heart, self.Bone, self.Skin, self.Adipose,
                            self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
                            self.GI, self.ProstateUterus, self.Kidney, self.BloodProteinComplex]
 
         Rest_init(self)
-        self.Rest = Kidney(self.Rest_param, self.Rest_var, self.simParameters)
+        self.Rest = Rest(self.Rest_param, self.Rest_var, self.simParameters)
         self.OrgansList.append(self.Rest)
 
         Vein_init(self)
@@ -180,6 +189,17 @@ class Patient:
         for Organ in self.OrgansList:  ## Adding the Vein and Areterial information to Organs
             Organ.Set_ArtVein(self.Art, self.Vein)
 
+        self.OrgansList.append(self.Vein)
+        self.OrgansList.append(self.Art)
+
+    def Run(self):
+        for i, t in enumerate(self.tList):
+            for Organ in self.OrgansList:
+                Organ.Calculate(i)
+
+
 
 if __name__ == "__main__":
-    PBPK_model = Patient()
+    patient = Patient(Patient_info)
+    patient.Run()
+    print("Done")

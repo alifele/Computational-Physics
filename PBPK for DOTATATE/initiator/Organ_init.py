@@ -1,16 +1,16 @@
 ## Receptor Positive Organ Initiator
-from Data import Data
+from initiator.Data import Data
 
 
 def Tumor_init(Patient):
     if Patient.patient_info.tumorType == "NET":
-        v_tu_int = Data.TumorData["v_int_NET"]
-        v_tu_v = Data.TumorData["u_v_NET"]
-        k_tu = Data.TumorData["k_NET"]  ## for PS calculation
+        v_tu_int = 0.3
+        v_tu_v = 0.1
+        k_tu = 0.2  ## for PS calculation
     else:
-        v_tu_int = Data.TumorData["v_int_menin"]
-        v_tu_v = Data.TumorData["v_v_menin"]
-        k_tu = Data.TumorData["k_menin"]  ## for PS calculation
+        v_tu_int = 0.23
+        v_tu_v = 0.11
+        k_tu = 0.31  ## for PS calculation
 
     Patient.Tumor_param = {
         "V_total": Patient.patient_info.V_tu,
@@ -20,23 +20,27 @@ def Tumor_init(Patient):
         "V_int": v_tu_int * Patient.patient_info.V_tu,
         "k_on": Patient.k_on,
         "k_off": Patient.k_off,
+        "k": k_tu,
         "lambda_int": Data.TumorData["lambda_int"],
-        "lambda_rel": Patient.patient_info.lambda_rel,
+        "lambda_rel": Patient.patient_info.lambda_rel_TU,
         "lambda_phy": Patient.lambda_phy}
 
     Patient.Tumor_var["R"] = Patient.patient_info.R_tu_density * Patient.patient_info.V_tu
 
 
 def Liver_init(Patient):
+    lambda_int = 1.7 * Data.TumorData["lambda_int"]
+    k = Data.MuscleData["k"] * 100
     Patient.Liver_param = {
         "V_total": Patient.patient_info.V_L,
         "F": 0.065 * Patient.F,
-        "V_v": Data.LiverData["v_v"] * Patient.patient_info.V_L,
-        "PS": Data.LiverData["k"] * Patient.patient_info.V_L,
-        "V_int": Data.LiverData["v_int"] * Patient.patient_info.V_L,
+        "V_v": 0.085 * Patient.patient_info.V_L,
+        "PS": k * Patient.patient_info.V_L,
+        "V_int": 0.2 * Patient.patient_info.V_L,
         "k_on": Patient.k_on,
         "k_off": Patient.k_off,
-        "lambda_int": Data.LiverData["lambda_int"],
+        "k": k,
+        "lambda_int": lambda_int,
         "lambda_rel": Patient.patient_info.lambda_rel_NT,
         "lambda_phy": Patient.lambda_phy}
 
@@ -44,15 +48,18 @@ def Liver_init(Patient):
 
 
 def Spleen_init(Patient):
+    lambda_int = 1.7 * Data.TumorData["lambda_int"]
+    k = Data.MuscleData["k"] * 100
     Patient.Spleen_param = {
         "V_total": Patient.patient_info.V_S,
         "F": 0.03 * Patient.F,
-        "V_v": Data.SpleenData["v_v"] * Patient.patient_info.V_S,
-        "PS": Data.SpleenData["k"] * Patient.patient_info.V_S,
-        "V_int": Data.SpleenData["v_int"] * Patient.patient_info.V_S,
+        "V_v": 0.12 * Patient.patient_info.V_S,
+        "PS": k * Patient.patient_info.V_S,
+        "V_int": 0.2 * Patient.patient_info.V_S,
         "k_on": Patient.k_on,
         "k_off": Patient.k_off,
-        "lambda_int": Data.SpleenData["lambda_int"],
+        "k": k,
+        "lambda_int": lambda_int,
         "lambda_rel": Patient.patient_info.lambda_rel_NT,
         "lambda_phy": Patient.lambda_phy}
 
@@ -60,20 +67,21 @@ def Spleen_init(Patient):
 
 
 def Kidney_init(Patient):
+    lambda_int = 1.7 * Data.TumorData["lambda_int"]
     Patient.Kidney_param = {
         "V_total": Patient.patient_info.V_K,
         "F": 0.19 * Patient.F,
-        "V_v": Data.KidneyData["v_v"] * Patient.patient_info.V_K,
-        "V_int": Data.KidneyData["v_int"] * Patient.patient_info.V_K,
+        "V_v": 0.055 * Patient.patient_info.V_K,
+        "V_int": 0.15 * Patient.patient_info.V_K,
         "V_intra": 0,
         "k_on": Patient.k_on,
         "k_off": Patient.k_off,
-        "lambda_int": Data.KidneyData["lambda_int"],
+        "lambda_int": lambda_int,
         "lambda_rel": Patient.patient_info.lambda_rel_NT,
         "lambda_phy": Patient.lambda_phy,
-        "GFR": 0,
-        "theta": 0,
-        "f_ecx": 0}
+        "GFR": Patient.patient_info.GFR,
+        "phi": 1.0,
+        "f_exc": 0.98}
 
     V_intra = (Patient.patient_info.V_K - Patient.Kidney_param["V_int"] - Patient.Kidney_param["V_v"]) * 2 / 3
     Patient.Kidney_param["V_intra"] = V_intra
@@ -102,11 +110,17 @@ def ProstateUterus_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k*V_total,
+        "k_on": Patient.k_on,
+        "k_off": Patient.k_off,
         "F": F,
         "k": k,
-        "lambda_phy": Patient.lambda_phy
+        "lambda_phy": Patient.lambda_phy,
+        "lambda_int": 1.7 * Data.TumorData["lambda_int"],
+        "lambda_rel": Patient.patient_info.lambda_rel_NT
     }
     Patient.ProstateUterus_var["R"] = R_density * Patient.ProstateUterus_param["V_total"]
+
 
 
 def Lungs_init(Patient):
@@ -122,6 +136,7 @@ def Lungs_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k*V_total,
         "F": F,
         "k": k,
         "lambda_phy": Patient.lambda_phy
@@ -142,9 +157,14 @@ def Adrenals_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k*V_total,
+        "k_on": Patient.k_on,
+        "k_off": Patient.k_off,
         "F": F,
         "k": k,
-        "lambda_phy": Patient.lambda_phy
+        "lambda_phy": Patient.lambda_phy,
+        "lambda_int": 1.7 * Data.TumorData["lambda_int"],
+        "lambda_rel": Patient.patient_info.lambda_rel_NT
     }
     Patient.Adrenals_var["R"] = R_density * Patient.Adrenals_param["V_total"]
 
@@ -161,9 +181,14 @@ def GI_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k*V_total,
         "F": F,
+        "k_on": Patient.k_on,
+        "k_off": Patient.k_off,
         "k": k,
-        "lambda_phy": Patient.lambda_phy
+        "lambda_phy": Patient.lambda_phy,
+        "lambda_int": 1.7 * Data.TumorData["lambda_int"],
+        "lambda_rel": Patient.patient_info.lambda_rel_NT
     }
     Patient.GI_var["R"] = R_density * Patient.GI_param["V_total"]
 
@@ -180,6 +205,7 @@ def Skin_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k*V_total,
         "F": F,
         "k": k,
         "lambda_phy": Patient.lambda_phy
@@ -199,6 +225,7 @@ def Adipose_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k*V_total,
         "F": F,
         "k": k,
         "lambda_phy": Patient.lambda_phy
@@ -220,9 +247,14 @@ def RedMarrow_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k * V_total,
+        "k_on": Patient.k_on,
+        "k_off": Patient.k_off,
         "F": F,
         "k": k,
-        "lambda_phy": Patient.lambda_phy
+        "lambda_phy": Patient.lambda_phy,
+        "lambda_int": 1.7 * Data.TumorData["lambda_int"],
+        "lambda_rel": Patient.patient_info.lambda_rel_NT
     }
     Patient.RedMarrow_var["R"] = R_density * Patient.RedMarrow_param["V_total"]
 
@@ -240,6 +272,7 @@ def Bone_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k * V_total,
         "F": F,
         "k": k,
         "lambda_phy": Patient.lambda_phy
@@ -261,6 +294,7 @@ def Heart_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k * V_total,
         "F": F,
         "k": k,
         "lambda_phy": Patient.lambda_phy
@@ -281,6 +315,7 @@ def Brain_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "PS": k * V_total,
         "F": F,
         "k": k,
         "lambda_phy": Patient.lambda_phy
@@ -301,10 +336,15 @@ def Muscle_init(Patient):
     Patient.Muscle_param = {
         "V_total": V_total,
         "V_v": V_v,
+        "k_on": Patient.k_on,
+        "k_off": Patient.k_off,
         "V_int": V_int,
+        "PS": k * V_total,
         "F": F,
         "k": k,
-        "lambda_phy": Patient.lambda_phy
+        "lambda_phy": Patient.lambda_phy,
+        "lambda_int": 1.7 * Data.TumorData["lambda_int"],
+        "lambda_rel": Patient.patient_info.lambda_rel_NT
     }
     Patient.Muscle_var["R"] = R_density * Patient.Muscle_param["V_total"]
 
@@ -324,11 +364,13 @@ def Vein_init(Patient):
     V_total = (0.18 + 0.045) * Patient.V_p
     F = Patient.F
 
-    Patient.Art_param = {
+    Patient.Vein_param = {
         "V_total": V_total,
         "F": F,
         "lambda_phy": Patient.lambda_phy
     }
+    Patient.Vein_var["P_labeled"] = 100
+    Patient.Vein_var["P_unlabeled"] = 100
 
 
 def Rest_init(Patient):
@@ -337,7 +379,7 @@ def Rest_init(Patient):
     V_v_organs = 0.0
     F_organs = 0.0
     for organ in Patient.OrgansList:
-        if organ.name == "Tumor":
+        if organ.name == "Tumor" or "BloodProteinComplex":
             continue
         V_total_organs += organ.parameters["V_total"]
         V_v_organs += organ.parameters["V_v"]
@@ -356,16 +398,21 @@ def Rest_init(Patient):
         "V_total": V_total,
         "V_v": V_v,
         "V_int": V_int,
+        "k_on": Patient.k_on,
+        "k_off": Patient.k_off,
+        "PS": k * V_total,
         "F": F,
         "k": k,
-        "lambda_phy": Patient.lambda_phy
+        "lambda_phy": Patient.lambda_phy,
+        "lambda_int": 1.7 * Data.TumorData["lambda_int"],
+        "lambda_rel": Patient.patient_info.lambda_rel_NT
     }
     Patient.Rest_var["R"] = R_density * Patient.Rest_param["V_total"]
 
 
 def BloodProteinComplex_init(Patient):
     Patient.BloodProteinComplex_param = {
-        "k_pr": Patient.patient_info.k_pr,
+        "K_pr": Patient.patient_info.k_pr,
         "lambda_phy": Patient.lambda_phy
     }
 

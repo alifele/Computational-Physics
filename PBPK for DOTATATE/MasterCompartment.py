@@ -17,7 +17,7 @@ class MasterCompartment:
         # self.P_labeled_aux= self.P.P_labeled
         self.parameters = MC_parameters
         self.F = MC_parameters["F"]
-        self.V = MC_parameters["V"]
+        self.V = MC_parameters["V_total"]
         self.lambda_phy = MC_parameters["lambda_phy"]
 
         self.tmax = simParameters["tmax"]
@@ -42,7 +42,7 @@ class MasterCompartment:
             if type(organ).__name__ == "Liver":
                 self.Liver_ID = i
 
-            if type(organ).__name__ == "PlasmaProteinComplex":
+            if type(organ).__name__ == "BloodProteinComplex":
                 self.PPC_ID = i  ## I need this because I need the value of
                 ## K_pr for following calculations which is
                 ## stored inside the PlasmaProteinComplex
@@ -52,17 +52,41 @@ class MasterCompartment:
                 ## Vein.P for following calculations which is
                 ## stored inside the Vein
 
+            if type(organ).__name__ == "Lungs":
+                self.Lungs_ID = i ## I need this to update the Art differential equations
+
+
     def Calculate(self,t):
         if self.name == "Art":
-            pass
+            ResultofSum_unlabeled = 0.0
+            ResultofSum_labeled = 0.0
+            for i, organ in enumerate(self.OrgansList):
+                if organ.name == "BloodProteinComplex" or organ.name == "Vein" or organ.name == "Art":
+                    continue
+
+                ResultofSum_unlabeled += (-organ.F / self.V * self.P.P_labeled) * self.dt
+                ResultofSum_labeled += (-organ.F / self.V * self.P.P_unlabeled) * self.dt
+
+
+            ResultofSum_unlabeled += (self.F/self.OrgansList[self.Lungs_ID].V_v * self.OrgansList[self.Lungs_ID].P.vascular_unlabeled +
+                                    self.lambda_phy*self.P.P_labeled)*self.dt
+            ResultofSum_labeled += (self.F / self.OrgansList[self.Lungs_ID].V_v * self.OrgansList[self.Lungs_ID].P.vascular_labeled -
+                                      self.lambda_phy * self.P.P_labeled) * self.dt
+
+            self.P.P_unlabeled = ResultofSum_unlabeled
+            self.P.P_labeled = ResultofSum_labeled
 
         if self.name == "Vein":
             ResultofSum_unlabeled = 0.0
             ResultofSum_labeled = 0.0
             for i,organ in enumerate(self.OrgansList):
+                if organ.name == "BloodProteinComplex" or organ.name == "Vein" or organ.name == "Art":
+                    continue
 
-                ResultofSum_unlabeled += (organ.F/organ.V_v * self.P.vascular_unlabeled)*self.dt
-                ResultofSum_labeled += (organ.F/organ.V_v * self.P.vascular_labeled)*self.dt
+                ResultofSum_unlabeled += (organ.F/organ.V_v * organ.P.vascular_unlabeled)*self.dt
+                ResultofSum_labeled += (organ.F/organ.V_v * organ.P.vascular_labeled)*self.dt
+
+
 
             ResultofSum_unlabeled += (-self.OrgansList[self.PPC_ID].K_pr * self.P.P_unlabeled +
                                       (self.OrgansList[self.Spleen_ID].F + self.OrgansList[self.GI_ID].F) /
