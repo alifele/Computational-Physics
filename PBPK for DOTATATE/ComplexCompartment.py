@@ -76,7 +76,7 @@ class ComplexCompartment:
                                       self.P.interacellular_unlabeled/self.V_intera*(self.F_fil - self.F_exc) +
                                       self.lambda_phy*self.P.vascular_labeled)*self.dt
 
-        self.P_vascular_labeled_aux += (-self.P.vascular_labeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_labeled/self.Art.V -
+        self.P_vascular_labeled_aux += (-self.P.vascular_labeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_labeled/self.Art.V +
                                       self.P.interacellular_labeled/self.V_intera*(self.F_fil - self.F_exc) -
                                       self.lambda_phy*self.P.vascular_labeled)*self.dt
 
@@ -137,6 +137,8 @@ class ComplexCompartment:
         self.P.interacellular_labeled = self.P_interacellular_labeled_aux
         self.RP.RP_unlabeled = self.RP_unlabeled_aux
         self.RP.RP_labeled = self.RP_labeled_aux
+
+        self.RP.R += (-self.RP.RP_unlabeled - self.RP.RP_labeled)
 
 
 

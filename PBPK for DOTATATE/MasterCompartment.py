@@ -61,11 +61,11 @@ class MasterCompartment:
             ResultofSum_unlabeled = 0.0
             ResultofSum_labeled = 0.0
             for i, organ in enumerate(self.OrgansList):
-                if organ.name == "BloodProteinComplex" or organ.name == "Vein" or organ.name == "Art":
+                if organ.name == "BloodProteinComplex" or organ.name == "Vein" or organ.name == "Art" or organ.name == "Lungs":
                     continue
 
-                ResultofSum_unlabeled += (-organ.F / self.V * self.P.P_labeled) * self.dt
-                ResultofSum_labeled += (-organ.F / self.V * self.P.P_unlabeled) * self.dt
+                ResultofSum_unlabeled += (-organ.F / self.V * self.P.P_unlabeled) * self.dt
+                ResultofSum_labeled += (-organ.F / self.V * self.P.P_labeled) * self.dt
 
 
             ResultofSum_unlabeled += (self.F/self.OrgansList[self.Lungs_ID].V_v * self.OrgansList[self.Lungs_ID].P.vascular_unlabeled +
@@ -73,8 +73,8 @@ class MasterCompartment:
             ResultofSum_labeled += (self.F / self.OrgansList[self.Lungs_ID].V_v * self.OrgansList[self.Lungs_ID].P.vascular_labeled -
                                       self.lambda_phy * self.P.P_labeled) * self.dt
 
-            self.P.P_unlabeled = ResultofSum_unlabeled
-            self.P.P_labeled = ResultofSum_labeled
+            self.P.P_unlabeled += ResultofSum_unlabeled
+            self.P.P_labeled += ResultofSum_labeled
 
         if self.name == "Vein":
             ResultofSum_unlabeled = 0.0
@@ -113,8 +113,8 @@ class MasterCompartment:
             ResultofSum_unlabeled += (- self.OrgansList[self.Lungs_ID].F * self.P.P_unlabeled/self.V)*self.dt
             ResultofSum_labeled += (- self.OrgansList[self.Lungs_ID].F * self.P.P_labeled / self.V) * self.dt
 
-            self.P.P_unlabeled = ResultofSum_unlabeled
-            self.P.P_labeled = ResultofSum_labeled
+            self.P.P_unlabeled += ResultofSum_unlabeled
+            self.P.P_labeled += ResultofSum_labeled
 
 
 

@@ -371,8 +371,8 @@ def Vein_init(Patient):
         "F": F,                                         # L/min
         "lambda_phy": Patient.lambda_phy                # 1/min
     }
-    Patient.Vein_var["P_labeled"] = 50000
-    Patient.Vein_var["P_unlabeled"] = 50000
+    Patient.Vein_var["P_labeled"] = 0.5 * 1e-5
+    Patient.Vein_var["P_unlabeled"] = 0.5 * 1e-5
 
 
 def Rest_init(Patient):

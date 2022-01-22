@@ -38,7 +38,7 @@ class Patient:
 
 
         #self.lambda_phy = np.log(2)/(6.647 * 3600 *
-        self.lambda_phy = 7.23 * 1e-5 * 500000
+        self.lambda_phy = 7.23 * 1e-5 * 5000
 
         self.k_on = 0.04/0.5
         self.k_off = 0.04
@@ -75,8 +75,8 @@ class Patient:
         self.setOrgans()
 
     def setSimParameters(self):
-        tmax = 0.1
-        level = 8
+        tmax = 50
+        level = 13
         N_t = np.power(2, level)
         dt = tmax / (N_t-1)
         self.simParameters = {"tmax": tmax,
@@ -231,6 +231,6 @@ class Patient:
 if __name__ == "__main__":
     patient = Patient(Patient_info)
     patient.Run()
-    plt.plot(patient.Kidney.RPList.RP_labeled)
-    plt.show()
+    # plt.plot(patient.Vein.PList.P_unlabeled); plt.show()
+    plt.plot(patient.Vein.PList.P_unlabeled);plt.show()
     print("Done")
