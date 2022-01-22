@@ -136,7 +136,7 @@ class ComplexCompartment:
         self.P.internalized_labeled = self.P_internalized_labeled_aux
         self.P.interacellular_labeled = self.P_interacellular_labeled_aux
         self.RP.RP_unlabeled = self.RP_unlabeled_aux
-        self.RP.RP_labeled = self.RP_unlabeled_aux
+        self.RP.RP_labeled = self.RP_labeled_aux
 
 
 

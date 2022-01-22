@@ -54,11 +54,11 @@ class ReceptorNegativeCompartment:
                                               self.lambda_phy*self.P.interestitial_labeled)*self.dt
 
         else:
-            self.P_vascular_unlabeled_aux += (self.Art.F * (self.Vein.P.P_labeled / self.Vein.V - self.P.vascular_unlabeled / self.V_v) +
+            self.P_vascular_unlabeled_aux += (self.Vein.F * (self.Vein.P.P_unlabeled / self.Vein.V - self.P.vascular_unlabeled / self.V_v) +
                                           self.PS * (self.P.interestitial_unlabeled / self.V_int - self.P.vascular_unlabeled / self.V_v) +
                                           self.lambda_phy * self.P.vascular_labeled) * self.dt
 
-            self.P_vascular_labeled_aux += (self.Art.F * ( self.Vein.P.P_labeled / self.Vein.V - self.P.vascular_labeled / self.V_v) +
+            self.P_vascular_labeled_aux += (self.Vein.F * ( self.Vein.P.P_labeled / self.Vein.V - self.P.vascular_labeled / self.V_v) +
                                           self.PS * (self.P.interestitial_labeled / self.V_int - self.P.vascular_labeled / self.V_v) -
                                           self.lambda_phy * self.P.vascular_labeled) * self.dt
 

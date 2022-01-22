@@ -82,11 +82,11 @@ class ReceptorPositiveCompartment:
                                          self.lambda_phy*self.P.interestitial_labeled)*self.dt
 
         ## Receptor-Peptide bond Volume
-        self.RP_unlabeled_aux += (self.k_on * self.RP.R * self.P.interestitial_unlabeled / self.V_int -
+        self.RP_unlabeled_aux += (self.k_on * self.RP.R * self.P_interestitial_unlabeled_aux/ self.V_int -
                                  (self.k_off+self.lambda_int) * self.RP.RP_unlabeled  +
                                  self.lambda_phy*self.RP.RP_labeled)*self.dt
 
-        self.RP_labeled_aux += (self.k_on * self.RP.R * self.P.interestitial_labeled / self.V_int -
+        self.RP_labeled_aux += (self.k_on * self.RP.R * self.P_interestitial_labeled_aux / self.V_int -
                                 (self.k_off + self.lambda_int) * self.RP.RP_labeled -
                                  self.lambda_phy * self.RP.RP_labeled) * self.dt
 
@@ -105,7 +105,7 @@ class ReceptorPositiveCompartment:
         self.P.interestitial_labeled = self.P_interestitial_labeled_aux
         self.P.internalized_labeled = self.P_internalized_labeled_aux
         self.RP.RP_unlabeled = self.RP_unlabeled_aux
-        self.RP.RP_labeled = self.RP_unlabeled_aux
+        self.RP.RP_labeled = self.RP_labeled_aux
 
         ## Storing the values in the list
         self.PList.vascular_unlabeled[t] = self.P.vascular_unlabeled

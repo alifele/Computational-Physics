@@ -80,13 +80,19 @@ class MasterCompartment:
             ResultofSum_unlabeled = 0.0
             ResultofSum_labeled = 0.0
             for i,organ in enumerate(self.OrgansList):
-                if organ.name == "BloodProteinComplex" or organ.name == "Vein" or organ.name == "Art":
+                if organ.name == "BloodProteinComplex" or organ.name == "Vein" or organ.name == "Art" or organ.name == "Lungs":
+                    ## Note that the contirbution of BloodProteinComplex is added seperately.
+                    ## Contribution of Vein and Art must not be included (because there are compartments itself!)
+                    ## Contribution of Lungs must not be included since Lungs are in fact carring the blood away from
+                    ## the compartment not bringing in.
                     continue
 
                 ResultofSum_unlabeled += (organ.F/organ.V_v * organ.P.vascular_unlabeled)*self.dt
                 ResultofSum_labeled += (organ.F/organ.V_v * organ.P.vascular_labeled)*self.dt
 
 
+            ## Note that there is not subtraction in these equations since I have already not included those
+            ## organs to be subtracted (Spleen and GI) when I was calculating ResultofSum variable
 
             ResultofSum_unlabeled += (-self.OrgansList[self.PPC_ID].K_pr * self.P.P_unlabeled +
                                       (self.OrgansList[self.Spleen_ID].F + self.OrgansList[self.GI_ID].F) /
@@ -97,6 +103,15 @@ class MasterCompartment:
                                       (self.OrgansList[self.Spleen_ID].F + self.OrgansList[self.GI_ID].F) /
                                       (self.OrgansList[self.Liver_ID].V_v) * self.OrgansList[self.Liver_ID].P.vascular_labeled -
                                       self.lambda_phy * self.P.P_labeled) * self.dt
+
+
+
+            ## Important
+            ## The fact that Lungs are carrying the blood away from Vein compartment is not included in the differential
+            ## equation used in the paper. So here I am going to add it manually!
+
+            ResultofSum_unlabeled += (- self.OrgansList[self.Lungs_ID].F * self.P.P_unlabeled/self.V)*self.dt
+            ResultofSum_labeled += (- self.OrgansList[self.Lungs_ID].F * self.P.P_labeled / self.V) * self.dt
 
             self.P.P_unlabeled = ResultofSum_unlabeled
             self.P.P_labeled = ResultofSum_labeled

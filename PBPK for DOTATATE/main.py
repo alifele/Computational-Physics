@@ -9,8 +9,23 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-## TODO Redifne the value of k_on in compartments because in the supp. of the article it ueses k_on_nonl (in the diagrams)
+## TODO
+# Redifne the value of k_on in compartments because in the supp. of the article it ueses k_on_nonl (in the diagrams)
 
+
+## TODO
+## In the differential equation of the Vein, the fact that lungs carries peptide away from the veins compartment is not included.
+## Also, you need to note that in the sum, you must not include in lungs
+
+## TODO
+## There is an inconsistency in the units of the values used in the tables and in the differential equations.
+## For example k_i values (which are used to calculate PS values) are reported in ml units. But on the other hand the
+## values for volume of the organs are in units of L. You need to change the values and make their units consistent
+
+
+## TODO
+## There is some thing wrong with the Vein compartment. First it gets negative and then it gets very close to 0
+## and kind of freezes there
 
 
 class Patient:
@@ -22,7 +37,9 @@ class Patient:
         self.patient_info = Patient_info
 
 
-        self.lambda_phy = np.log(2)/(6.647 * 3600 * 24)
+        #self.lambda_phy = np.log(2)/(6.647 * 3600 *
+        self.lambda_phy = 7.23 * 1e-5 * 500000
+
         self.k_on = 0.04/0.5
         self.k_off = 0.04
 
@@ -58,7 +75,7 @@ class Patient:
         self.setOrgans()
 
     def setSimParameters(self):
-        tmax = 1
+        tmax = 0.1
         level = 8
         N_t = np.power(2, level)
         dt = tmax / (N_t-1)
@@ -69,33 +86,33 @@ class Patient:
         self.tList = np.linspace(0,tmax,N_t)
 
     def setOrganVariables(self):
-        self.Brain_var = self.initial_values
-        self.Heart_var = self.initial_values
-        self.Bone_var = self.initial_values
-        self.Skin_var = self.initial_values
-        self.Adipose_var = self.initial_values
-        self.Lungs_var = self.initial_values
+        self.Brain_var = self.initial_values.copy()
+        self.Heart_var = self.initial_values.copy()
+        self.Bone_var = self.initial_values.copy()
+        self.Skin_var = self.initial_values.copy()
+        self.Adipose_var = self.initial_values.copy()
+        self.Lungs_var = self.initial_values.copy()
 
-        self.Liver_var = self.initial_values
-        self.Spleen_var = self.initial_values
-        self.Tumor_var = self.initial_values
-        self.RedMarrow_var = self.initial_values
-        self.GI_var = self.initial_values
-        self.Muscle_var = self.initial_values
-        self.ProstateUterus_var = self.initial_values
-        self.Adrenals_var = self.initial_values
-        self.Rest_var = self.initial_values
+        self.Liver_var = self.initial_values.copy()
+        self.Spleen_var = self.initial_values.copy()
+        self.Tumor_var = self.initial_values.copy()
+        self.RedMarrow_var = self.initial_values.copy()
+        self.GI_var = self.initial_values.copy()
+        self.Muscle_var = self.initial_values.copy()
+        self.ProstateUterus_var = self.initial_values.copy()
+        self.Adrenals_var = self.initial_values.copy()
+        self.Rest_var = self.initial_values.copy()
 
-        self.Kidney_var = self.initial_values
+        self.Kidney_var = self.initial_values.copy()
 
-        self.Art_var = self.initial_values
-        self.Vein_var = self.initial_values
+        self.Art_var = self.initial_values.copy()
+        self.Vein_var = self.initial_values.copy()
 
-        self.BloodProteinComplex_var = self.initial_values
+        self.BloodProteinComplex_var = self.initial_values.copy()
 
     def setOrganParameters(self):
 
-        ### Receptor Positive Organs
+        ## Receptor Positive Organs
         self.Liver_param = None
         self.Tumor_param = None
         self.Spleen_param = None
@@ -149,13 +166,13 @@ class Patient:
 
 
 
-        #self.Brain = Brain(self.Brain_param, self.Brain_var, self.simParameters)
+        # self.Brain = Brain(self.Brain_param, self.Brain_var, self.simParameters)
         self.Heart = Heart(self.Heart_param, self.Heart_var, self.simParameters)
         self.Bone = Bone(self.Bone_param, self.Bone_var, self.simParameters)
         self.Skin = Skin(self.Skin_param, self.Skin_var, self.simParameters)
         self.Adipose = Adipose(self.Adipose_param, self.Adipose_var, self.simParameters)
         self.Lungs = Lungs(self.Lungs_param, self.Lungs_var, self.simParameters)
-
+        #
         self.Liver = Liver(self.Liver_param, self.Liver_var, self.simParameters)
         self.Spleen = Spleen(self.Spleen_param, self.Spleen_var, self.simParameters)
         self.Tumor = Tumor(self.Tumor_param, self.Tumor_var, self.simParameters)
@@ -171,6 +188,7 @@ class Patient:
         # self.OrgansList = [self.Brain, self.Heart, self.Bone, self.Skin, self.Adipose,
         #                    self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
         #                    self.GI, self.ProstateUterus, self.Kidney, self.BloodProteinComplex]
+        # self.OrgansList = [self.Lungs]
 
         self.OrgansList = [self.Heart, self.Bone, self.Skin, self.Adipose,
                            self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
@@ -193,13 +211,26 @@ class Patient:
         self.OrgansList.append(self.Art)
 
     def Run(self):
-        for i, t in enumerate(self.tList):
-            for Organ in self.OrgansList:
-                Organ.Calculate(i)
 
+
+        for i, t in enumerate(self.tList):
+
+
+            self.Lungs.Calculate(i)
+            self.Art.Calculate(i)
+
+            for organ in self.OrgansList:
+                if organ.name == "Lungs" or organ.name == "Vein" or organ.name == "Art":
+                    continue
+
+                organ.Calculate(i)
+
+            self.Vein.Calculate(i)
 
 
 if __name__ == "__main__":
     patient = Patient(Patient_info)
     patient.Run()
+    plt.plot(patient.Kidney.RPList.RP_labeled)
+    plt.show()
     print("Done")
