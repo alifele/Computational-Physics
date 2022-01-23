@@ -17,15 +17,19 @@ import numpy as np
 ## In the differential equation of the Vein, the fact that lungs carries peptide away from the veins compartment is not included.
 ## Also, you need to note that in the sum, you must not include in lungs
 
-## TODO
-## There is an inconsistency in the units of the values used in the tables and in the differential equations.
-## For example k_i values (which are used to calculate PS values) are reported in ml units. But on the other hand the
-## values for volume of the organs are in units of L. You need to change the values and make their units consistent
 
 
 ## TODO
-## There is some thing wrong with the Vein compartment. First it gets negative and then it gets very close to 0
-## and kind of freezes there
+## The Euler method diverges when t gets big (about 500 for l=15). So I need to change that to RK4 solver
+## that is always stable.
+## I am not sure why, but kidney starts the unstability. without kidney compartment, the results
+## stay stable up to t=900 (l=15) but with kidney the results get unstable after t=500 (l=15).
+## Update: I found out that chaning the values of GFR changes the stability status of kidney!!!
+## of higher values of GFR, the system get unstable!!!
+
+## Update: The value of P_unlabeled+P_labeled in Vein compartment gets bigget than the initial
+## injected values!!!
+## So I think there is something wrong with Vein!!
 
 
 class Patient:
@@ -38,8 +42,7 @@ class Patient:
 
 
         #self.lambda_phy = np.log(2)/(6.647 * 3600 *
-        self.lambda_phy = 7.23 * 1e-5 * 5000
-
+        self.lambda_phy = 7.23 * 1e-5 *1
         self.k_on = 0.04/0.5
         self.k_off = 0.04
 
@@ -69,14 +72,23 @@ class Patient:
                                "PPR_unlabeled": 0,
                                "R": 0}  ## for Art and Vein
 
+
+        self.ReceptorPositive = ["Liver","Spleen","Tumor","RedMarrow","GI","Muscle","ProstateUterus","adrenals","rest"]
+        self.ReceptorNegative = ["Bone","Brain","Heart","Skin","Adipose","Lungs"]
+        self.SimpleCompartment = ["BloodProteinComplex"]
+        self.MasterCompartment = ["Art", "Vein"]
+
         self.setSimParameters()
         self.setOrganVariables()
         self.setOrganParameters()
         self.setOrgans()
 
     def setSimParameters(self):
-        tmax = 50
-        level = 13
+        # tmax = 555.45         ## The values that gets unstable (with *100 in labmda_phys)
+        # level = 15
+
+        tmax = 1000
+        level = 16
         N_t = np.power(2, level)
         dt = tmax / (N_t-1)
         self.simParameters = {"tmax": tmax,
@@ -194,6 +206,10 @@ class Patient:
                            self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
                            self.GI, self.ProstateUterus, self.Kidney, self.BloodProteinComplex]
 
+        # self.OrgansList = [self.Heart, self.Bone, self.Skin, self.Adipose,
+        #                    self.Lungs, self.Liver, self.Spleen, self.Tumor, self.RedMarrow,
+        #                    self.GI, self.ProstateUterus, self.BloodProteinComplex]
+
         Rest_init(self)
         self.Rest = Rest(self.Rest_param, self.Rest_var, self.simParameters)
         self.OrgansList.append(self.Rest)
@@ -215,22 +231,35 @@ class Patient:
 
         for i, t in enumerate(self.tList):
 
-
+            ## Note that I am sure about the order of update. Please think about that on a
+            ## piece of paper. It will make sense!
             self.Lungs.Calculate(i)
-            self.Art.Calculate(i)
+            self.Vein.Calculate(i)
 
             for organ in self.OrgansList:
                 if organ.name == "Lungs" or organ.name == "Vein" or organ.name == "Art":
                     continue
-
                 organ.Calculate(i)
 
-            self.Vein.Calculate(i)
+            self.Art.Calculate(i)
+
 
 
 if __name__ == "__main__":
     patient = Patient(Patient_info)
     patient.Run()
     # plt.plot(patient.Vein.PList.P_unlabeled); plt.show()
-    plt.plot(patient.Vein.PList.P_unlabeled);plt.show()
+    fig = plt.figure(figsize=(18,12))
+    j=0
+    for i, organ in enumerate(patient.OrgansList):
+        if organ.name == "BloodProteinComplex" or organ.name in patient.ReceptorNegative:
+            continue
+
+        ax = fig.add_subplot(4,2, j + 1, title=organ.name + "_unlabeled")
+        ax.plot(patient.tList, organ.RPList.RP_labeled)
+        j+=1
+
+    #plt.plot(patient.Vein.PList.P_unlabeled);plt.show()
+    plt.tight_layout()
+    plt.show()
     print("Done")

@@ -53,7 +53,7 @@ class ComplexCompartment:
         self.f_exc = CC_parameters['f_exc']
 
 
-        self.F_fil = self.GFR * self.phi
+        self.F_fil = self.GFR * self.phi*1
         self.F_exc = self.F_fil * self.f_exc
 
         self.tmax = simParameters["tmax"]
@@ -72,7 +72,7 @@ class ComplexCompartment:
     def Calculate(self,t):
 
         ## Vascular Volume
-        self.P_vascular_unlabeled_aux += (-self.P.vascular_unlabeled/self.V_v*(self.F_fil+self.F) + self.F*self.Art.P.P_unlabeled/self.Art.V +
+        self.P_vascular_unlabeled_aux += (-self.P.vascular_unlabeled/self.V_v *(self.F_fil+self.F) + self.F*self.Art.P.P_unlabeled/self.Art.V +
                                       self.P.interacellular_unlabeled/self.V_intera*(self.F_fil - self.F_exc) +
                                       self.lambda_phy*self.P.vascular_labeled)*self.dt
 
@@ -106,11 +106,11 @@ class ComplexCompartment:
 
         ## Receptor-Peptide complex Volume
         self.RP_unlabeled_aux += (self.k_on*self.P.interestitial_unlabeled/self.V_int*self.RP.R -
-                                 self.RP.RP_unlabeled*(self.k_on+self.lambda_int) +
+                                 self.RP.RP_unlabeled*(self.k_off+self.lambda_int) +
                                  self.lambda_phy*self.RP.RP_labeled)*self.dt
 
         self.RP_labeled_aux += (self.k_on * self.P.interestitial_labeled / self.V_int * self.RP.R -
-                                 self.RP.RP_labeled * (self.k_on + self.lambda_int) -
+                                 self.RP.RP_labeled * (self.k_off + self.lambda_int) -
                                  self.lambda_phy * self.RP.RP_labeled) * self.dt
 
 

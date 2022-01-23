@@ -79,7 +79,7 @@ def Kidney_init(Patient):
         "lambda_int": lambda_int,                               # 1/min
         "lambda_rel": Patient.patient_info.lambda_rel_NT,       # 1/min
         "lambda_phy": Patient.lambda_phy,                       # 1/min
-        "GFR": Patient.patient_info.GFR,
+        "GFR": Patient.patient_info.GFR*1,
         "phi": 1.0,
         "f_exc": 0.98}
 
@@ -414,7 +414,7 @@ def Rest_init(Patient):
 
 def BloodProteinComplex_init(Patient):
     Patient.BloodProteinComplex_param = {
-        "K_pr": Patient.patient_info.k_pr,  # 1/min
+        "K_pr": Patient.patient_info.k_pr * 0,  # 1/min
         "lambda_phy": Patient.lambda_phy    # 1/min
     }
 
