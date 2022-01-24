@@ -91,8 +91,8 @@ class Patient:
         # tmax = 555.45         ## The values that gets unstable (with *100 in labmda_phys)
         # level = 15
 
-        tmax = 1000
-        level = 16
+        tmax = 500
+        level = 15
         N_t = np.power(2, level)
         dt = tmax / (N_t-1)
         self.simParameters = {"tmax": tmax,
