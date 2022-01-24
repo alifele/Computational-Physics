@@ -7,6 +7,7 @@ from initiator.Organ_init import *
 from Patient_info import Patient_info
 import matplotlib.pyplot as plt
 import numpy as np
+from SA_Experiment import SA_Experiment
 
 
 ## TODO
@@ -31,6 +32,9 @@ import numpy as np
 ## injected values!!!
 ## So I think there is something wrong with Vein!!
 
+## TODO
+## The value of K_pr for bloodProteinComplex is set to zero. Set it to its actual value for final runs
+
 
 class Patient:
 
@@ -42,7 +46,7 @@ class Patient:
 
 
         #self.lambda_phy = np.log(2)/(6.647 * 3600 *
-        self.lambda_phy = 7.23 * 1e-5 *1
+        self.lambda_phy = 7.23 * 1e-5 *100
         self.k_on = 0.04/0.5
         self.k_off = 0.04
 
@@ -246,20 +250,26 @@ class Patient:
 
 
 if __name__ == "__main__":
-    patient = Patient(Patient_info)
-    patient.Run()
+    #patient = Patient(Patient_info)
+    experiment = SA_Experiment(Patient, Patient_info)
+    #patient.Run()
     # plt.plot(patient.Vein.PList.P_unlabeled); plt.show()
-    fig = plt.figure(figsize=(18,12))
-    j=0
-    for i, organ in enumerate(patient.OrgansList):
-        if organ.name == "BloodProteinComplex" or organ.name in patient.ReceptorNegative:
-            continue
 
-        ax = fig.add_subplot(4,2, j + 1, title=organ.name + "_unlabeled")
-        ax.plot(patient.tList, organ.RPList.RP_labeled)
-        j+=1
 
-    #plt.plot(patient.Vein.PList.P_unlabeled);plt.show()
-    plt.tight_layout()
-    plt.show()
-    print("Done")
+    experiment.Explore()
+
+
+    # fig = plt.figure(figsize=(18,12))
+    # j=0
+    # for i, organ in enumerate(patient.OrgansList):
+    #     if organ.name == "BloodProteinComplex" or organ.name in patient.ReceptorNegative:
+    #         continue
+    #
+    #     ax = fig.add_subplot(4,2, j + 1, title=organ.name + "_unlabeled")
+    #     ax.plot(patient.tList, organ.RPList.RP_unlabeled)
+    #     j+=1
+    #
+    # #plt.plot(patient.Vein.PList.P_unlabeled);plt.show()
+    # plt.tight_layout()
+    # plt.show()
+    # print("Done")

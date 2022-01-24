@@ -26,4 +26,8 @@ class Patient_info:
     GFR = 0.11  #L/mi
 
 
+    Vein_P_labeled_injected = 0.5* 1e-5 ## nmol
+    Vein_P_unlabeled_injected = 0.5* 1e-5 ## nmol
+
+
 

@@ -81,7 +81,7 @@ def Kidney_init(Patient):
         "lambda_phy": Patient.lambda_phy,                       # 1/min
         "GFR": Patient.patient_info.GFR*1,
         "phi": 1.0,
-        "f_exc": 0.98}
+        "f_exc": 0.98 + 0.019999}
 
     V_intra = (Patient.patient_info.V_K - Patient.Kidney_param["V_int"] - Patient.Kidney_param["V_v"]) * 2 / 3
     Patient.Kidney_param["V_intra"] = V_intra
@@ -371,8 +371,8 @@ def Vein_init(Patient):
         "F": F,                                         # L/min
         "lambda_phy": Patient.lambda_phy                # 1/min
     }
-    Patient.Vein_var["P_labeled"] = 0.5 * 1e-5
-    Patient.Vein_var["P_unlabeled"] = 0.5 * 1e-5
+    Patient.Vein_var["P_labeled"] = Patient.patient_info.Vein_P_labeled_injected
+    Patient.Vein_var["P_unlabeled"] = Patient.patient_info.Vein_P_unlabeled_injected
 
 
 def Rest_init(Patient):

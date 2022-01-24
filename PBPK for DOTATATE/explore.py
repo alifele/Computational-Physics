@@ -19,17 +19,23 @@ if __name__ == "__main__":
     #
     # plt.show()
 
-    j = 0
-    fig = plt.figure(figsize=(18,12))
+    # j = 0
+    # fig = plt.figure(figsize=(18,12))
+    #
+    # for i, organ in enumerate(patient.OrgansList):
+    #     if organ.name == "BloodProteinComplex" or organ.name in patient.ReceptorNegative:
+    #         continue
+    #
+    #     ax = fig.add_subplot(4, 2, j + 1, title=organ.name + "--internalized_labeled")
+    #     ax.plot(patient.tList, organ.PList.internalized_labeled)
+    #     j += 1
 
-    for i, organ in enumerate(patient.OrgansList):
-        if organ.name == "BloodProteinComplex" or organ.name in patient.ReceptorNegative:
-            continue
+    # plt.plot(patient.tList, patient.Kidney.PList.interacellular_unlabeled)
+    # plt.title("Kidney -- interacellular_unlabeled")
+    #
+    # # plt.plot(patient.tList, patient.Vein.PList.P_unlabeled);plt.show()
+    # plt.tight_layout()
+    # plt.show()
 
-        ax = fig.add_subplot(4, 2, j + 1, title=organ.name + "_R")
-        ax.plot(patient.tList, organ.RPList.RP_unlabeled)
-        j += 1
+    plt.plot(experiment.patient.Tumor.RPList.RP_unlabeled)
 
-    # plt.plot(patient.Vein.PList.P_unlabeled);plt.show()
-    plt.tight_layout()
-    plt.show()

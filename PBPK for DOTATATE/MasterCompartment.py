@@ -80,7 +80,8 @@ class MasterCompartment:
             ResultofSum_unlabeled = 0.0
             ResultofSum_labeled = 0.0
             for i,organ in enumerate(self.OrgansList):
-                if organ.name == "BloodProteinComplex" or organ.name == "Vein" or organ.name == "Art" or organ.name == "Lungs":
+                if organ.name == "BloodProteinComplex" or organ.name == "Vein" or organ.name == "Art" or organ.name == "Lungs"\
+                        or organ.name == "Spleen" or organ.name == "GI":
                     ## Note that the contirbution of BloodProteinComplex is added seperately.
                     ## Contribution of Vein and Art must not be included (because there are compartments itself!)
                     ## Contribution of Lungs must not be included since Lungs are in fact carring the blood away from
