@@ -37,7 +37,7 @@ from SA_Experiment import SA_Experiment
 
 
 class Patient:
-
+    lambda_phy = 7.23 * 1e-5
     def __init__(self, Patient_info):
 
 
@@ -46,7 +46,7 @@ class Patient:
 
 
         #self.lambda_phy = np.log(2)/(6.647 * 3600 *
-        self.lambda_phy = 7.23 * 1e-5 *100
+        self.lambda_phy = 7.23 * 1e-5
         self.k_on = 0.04/0.5
         self.k_off = 0.04
 
@@ -91,8 +91,8 @@ class Patient:
         # tmax = 555.45         ## The values that gets unstable (with *100 in labmda_phys)
         # level = 15
 
-        tmax = 500
-        level = 15
+        tmax = 1500
+        level = 17
         N_t = np.power(2, level)
         dt = tmax / (N_t-1)
         self.simParameters = {"tmax": tmax,
