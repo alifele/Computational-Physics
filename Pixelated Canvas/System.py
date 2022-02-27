@@ -100,6 +100,11 @@ class System:
                               self.resolution - 1))
 
 
+        if middle:
+            self.mat *= 0
+            self.renderMatToBuffer()
+
+
 
 
 
