@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 ## TODO: Showing the results dynamically on the canvas or on another window
 
-class System:
+class MainWindow:
 
     def __init__(self, Sketch):
         self.resolution = 10
@@ -16,15 +16,15 @@ class System:
         self.columns = int(screen.get_height() / self.resolution)
         self.screen = screen
 
-        y = np.arange(-int(self.rows/2), int(self.rows/2))
-        x = np.arange(-int(self.columns/2), int(self.columns/2))
+        self.y = np.arange(-int(self.rows/2), int(self.rows/2))
+        self.x = np.arange(-int(self.columns/2), int(self.columns/2))
 
-        self.X,self.Y = np.meshgrid(x,y)
+        self.X,self.Y = np.meshgrid(self.x,self.y)
         self.popMat = np.zeros((self.rows, self.columns))
         self.typeMat = np.zeros((self.rows, self.columns), dtype='uint8') ## 0,1,2 (core-mantle-surface)
         self.ageMat = np.zeros((self.rows, self.columns))
 
-        self.colors = [(102, 102, 51), (0, 153, 204), (255, 153, 102), (0,0,0),(255,255,255)]
+        self.colors = [(102, 102, 51), (0, 153, 204), (0, 153, 102), (0,0,0),(255,255,255)]
         self.penColor = self.colors[-1]  ## -1 --> white, -2 --> Black
 
         self.initMats()
@@ -40,21 +40,19 @@ class System:
 
 
     def initMats(self):
-        center = [0,0]
-        R0 = 160
-        R1= R0*3
-        R2 = R1*2
-        self.popMat[(self.X - center[0]) ** 2 + (self.Y - center[1]) ** 2 < R2] = 1
 
-        self.typeMat[(self.X - center[0]) ** 2 + (self.Y - center[1]) ** 2 < R2] = 2
-        self.typeMat[(self.X - center[0]) ** 2 + (self.Y - center[1]) ** 2 < R1] = 1
-        self.typeMat[(self.X - center[0]) ** 2 + (self.Y - center[1]) ** 2 < R0] = 0
+        self.popMat = np.random.randint(2, size=(self.rows, self.columns))
+
+
+    def update(self):
+        self.gameOfLife()
 
 
 
     def handleEvent(self, Sketch, event):
         self.mouseDrawEventLoop(event)
         self.keyBoardEvent(Sketch, event)
+
 
     def keyBoardEvent(self, Sketch, event):
         if event.type == pygame.KEYDOWN:
@@ -68,12 +66,9 @@ class System:
                 self.penColor = self.colors[-1]
 
             if event.key == pygame.K_o:
-                Sketch.scene = Sketch.scenes["Main"]
+                Sketch.scene = Sketch.scenes["Sim"]
                 Sketch.clean()
                 Sketch.renderMatToBuffer(Sketch.scene)
-
-
-
 
     def mouseDrawEventLoop(self, event):
         left, middle, right = pygame.mouse.get_pressed()
@@ -99,12 +94,16 @@ class System:
             self.sketch.renderMatToBuffer(self)
 
 
-    def update(self):
-        #self.gameOfLife()
-        self.TumorGrowth()
+
+
+
+
 
     def TumorGrowth(self):
         pass
+
+
+
 
     def gameOfLife(self):   ## By using this update rule you will have the game of life simulation
         mat1 = np.roll(np.roll(self.popMat, -1, axis=0), -1, axis=1)
@@ -123,6 +122,7 @@ class System:
         self.popMat[(result != 2) * (result != 3)] = 0  ## !((result==2)+(result==3))
 
         self.sketch.renderMatToBuffer(self)
+
 
 
 

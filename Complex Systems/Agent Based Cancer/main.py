@@ -13,4 +13,4 @@ while True:
             exit()
         sketch.eventManager(event)
     sketch.draw()
-    #pygame.time.wait(30)
+    pygame.time.wait(30)
