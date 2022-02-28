@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
 from pygame.locals import *
+import matplotlib.pyplot as plt
 
 
 ## TODO: Adding the mouse interaction. Can be able to draw using the mouse
@@ -23,11 +24,11 @@ class System:
 
 
 
-        #self.mat = np.random.randint(2, size=(self.rows, self.columns))
+        self.mat = np.random.randint(2, size=(self.rows, self.columns))
 
         #self.mat[10*np.sin(X/5)+Y > 0] = 1
 
-        # for i in range(20):
+        # for i in range(2):
         #     centers = (np.random.randint(x[0],x[-1]), np.random.randint(y[0],y[-1]))
         #     self.mat[(X-centers[0])**2 + (Y-centers[1])**2 <40] = 1
 
@@ -59,14 +60,33 @@ class System:
         #                  (x * self.resolution, y * self.resolution, self.resolution - 1,
         #                   self.resolution - 1))
 
-        self.mat = np.roll(self.mat,1, axis=1)
-        self.mat = np.roll(self.mat,-1, axis=0)
-        self.renderMatToBuffer()
+        # self.mat = np.roll(self.mat,1, axis=1)
+        # self.mat = np.roll(self.mat,-1, axis=0)
+        # self.renderMatToBuffer()
+
+        self.gameOfLife()
 
 
     def gameOfLife(self):
-        pass
+        mat1 = np.roll(np.roll(self.mat, -1, axis=0), -1, axis=1)
+        mat2 = np.roll(self.mat, -1, axis=0)
+        mat3 = np.roll(np.roll(self.mat, -1, axis=0), 1, axis=1)
+        mat4 = np.roll(self.mat, 1, axis=1)
+        mat5 = np.roll(np.roll(self.mat, 1, axis=0), 1, axis=1)
+        mat6 = np.roll(self.mat, 1, axis=0)
+        mat7 = np.roll(np.roll(self.mat, 1, axis=0), -1, axis=1)
+        mat8 = np.roll(self.mat, -1, axis=1)
 
+
+        result = mat1 + mat2 + mat3 + mat4 + mat5 + mat6 + mat7 + mat8
+
+
+        self.mat[(result == 2) + (result == 3)] *= 1
+        self.mat[(result == 3)] = 1
+        self.mat[(result != 2) * (result != 3)] = 0  ## !((result==2)+(result==3))
+
+
+        self.renderMatToBuffer()
 
     def mouseDrawEventLoop(self, event):
         # if event.type == pygame.MOUSEBUTTONDOWN:

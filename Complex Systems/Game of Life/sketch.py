@@ -16,7 +16,7 @@ class Sketch:
         self.system.renderMatToBuffer()
 
     def draw(self):
-        #self.system.update()
+        self.system.update()
         pygame.display.update()
 
 
