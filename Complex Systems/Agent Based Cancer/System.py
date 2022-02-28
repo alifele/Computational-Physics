@@ -4,8 +4,7 @@ from pygame.locals import *
 import matplotlib.pyplot as plt
 
 
-## TODO: Adding the mouse interaction. Can be able to draw using the mouse
-
+## TODO: Showing the results dynamically on the canvas or on another window
 
 class System:
 
