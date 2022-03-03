@@ -25,6 +25,12 @@ class System:
         self.ageMat = np.zeros((self.rows, self.columns))
 
         self.colors = [(102, 102, 51), (0, 153, 204), (255, 153, 102), (0,0,0),(255,255,255)]
+        # self.colors = {"0":(102, 102, 51),
+        #                "1":(0, 153, 204),
+        #                "2":(255, 153, 102),
+        #                "white":(255,255,255),
+        #                "black":(0,0,0)}
+
         self.penColor = self.colors[-1]  ## -1 --> white, -2 --> Black
 
         self.initMats()
