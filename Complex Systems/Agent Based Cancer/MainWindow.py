@@ -41,11 +41,12 @@ class MainWindow:
 
     def initMats(self):
 
-        self.popMat = np.random.randint(2, size=(self.rows, self.columns))
+        self.popMat = np.random.randint(2, size=(self.rows, self.columns)) * (-2)
 
 
-    def update(self):
-        self.gameOfLife()
+    def update(self,t):
+        ##self.gameOfLife()
+        pass
 
 
 
