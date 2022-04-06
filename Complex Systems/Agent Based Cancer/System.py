@@ -24,7 +24,7 @@ class System:
             , np.array([1, 0]), np.array([1, 1]), np.array([0, -1]), np.array([0, 1])]
 
         self.alpha = 0.01
-        self.w = 0.005
+        self.w = 0.0055
         self.beta = 1.5 ## Dynamics scaling factor
 
 

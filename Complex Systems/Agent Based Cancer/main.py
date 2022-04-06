@@ -20,10 +20,10 @@ while True:
         sketch.eventManager(event)
     stopFlag = sketch.draw()
 
-    # if simulateForDifferentCells == 1:
-    #     if stopFlag % dataPoints == 0:
-    #         pygame.quit()
-    #         break
+    if simulateForDifferentCells == 1:
+        if stopFlag % dataPoints == 0:
+            pygame.quit()
+            break
         #pygame.time.wait(3)
 
-plt.plot(sketch.data[1:-1]); plt.show()
+plt.plot(sketch.data[1:2100]); plt.show()

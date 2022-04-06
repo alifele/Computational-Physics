@@ -44,7 +44,7 @@ class Sketch:
             pygame.display.update()
 
         if self.i % 60 == 0:
-            self.data[self.t-1] = self.scene.p + self.scene.q
+            self.data[self.t-1] = self.scene.p #+ self.scene.q
             self.t += 1
             print(self.t)
 
