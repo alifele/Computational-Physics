@@ -12,4 +12,4 @@ while True:
             pygame.quit()
             exit()
     sketch.draw()
-    pygame.time.wait(1)
+    pygame.time.wait(10)
