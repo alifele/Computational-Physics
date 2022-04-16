@@ -7,6 +7,6 @@ from Encoder import BigVectEncoder
 
 patient = Patient()
 therapy = Therapy()
-BigVect = BigVectEncoder(patient, therapy)
+bigVectEncoder = BigVectEncoder(patient, therapy)
 
 print("Hello")
