@@ -6,7 +6,7 @@ class Patient:
 
     def __init__(self):
 
-        org1 = {
+        self.org1 = {
             "F": 0,
             "PS": 0,
             "V_total": 0,
@@ -15,22 +15,22 @@ class Patient:
             "V_intra": 0,
             "k_on": 0,
             "K_off": 0,
-            "lambda_int": 0,
+            "lambda_intern": 0,
             "lambda_rel": 0,
             "R": 0
         }
 
-        Vein = {
+        self.Vein = {
             "F": 0,
             "V_total": 0,
         }
 
-        Art = {
+        self.Art = {
             "F": 0,
             "V_total": 0
         }
 
-        Lungs = {
+        self.Lungs = {
             "F": 0,
             "PS": 0,
             "V_total": 0,

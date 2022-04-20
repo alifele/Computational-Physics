@@ -1,12 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from Patient import Patient, Therapy
-from Encoder import BigVectEncoder
+from Encoder import Encoder
 
 
 
 patient = Patient()
 therapy = Therapy()
-bigVectEncoder = BigVectEncoder(patient, therapy)
+encoder = Encoder(patient, therapy)
+
 
 print("Hello")
