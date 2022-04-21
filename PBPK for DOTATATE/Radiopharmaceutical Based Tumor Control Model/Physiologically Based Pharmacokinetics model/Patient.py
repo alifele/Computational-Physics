@@ -6,41 +6,84 @@ class Patient:
 
     def __init__(self):
 
+        lambda_rel = 2
+        lambda_phys = 1
+        lambda_intern = 1
+
         self.org1 = {
-            "F": 0,
-            "PS": 0,
+            "name": "org1",
+            "F": 1,
+            "PS": 1,
             "V_total": 0,
             "V_v": 0,
             "V_int": 0,
             "V_intra": 0,
             "k_on": 0,
-            "K_off": 0,
-            "lambda_intern": 0,
-            "lambda_rel": 0,
-            "R": 0
+            "k_off": 1,
+            "lambda_intern": lambda_intern,
+            "lambda_rel": lambda_rel,
+            "lambda_phys": lambda_phys,
+            "R": 0,
+            "K_on": 1, ## R*k_on
         }
 
-        self.Vein = {
-            "F": 0,
+        self.org2 = {
+            "name": "org2",
+            "F": 1,
+            "PS": 1,
             "V_total": 0,
+            "V_v": 0,
+            "V_int": 0,
+            "V_intra": 0,
+            "k_on": 0,
+            "k_off": 1,
+            "lambda_intern": lambda_intern,
+            "lambda_rel": lambda_rel,
+            "lambda_phys": lambda_phys,
+            "R": 0,
+            "K_on": 1,  ## R*k_on
         }
 
-        self.Art = {
-            "F": 0,
-            "V_total": 0
-        }
-
-        self.Lungs = {
-            "F": 0,
+        self.org3 = {
+            "name": "org3",
+            "F": 1,
             "PS": 0,
             "V_total": 0,
             "V_v": 0,
             "V_int": 0,
+            "V_intra": 0,
+            "lambda_phys": lambda_phys,
         }
 
-        self.receptorPositiveList = [self.org1]
+        self.Vein = {
+            "name": "Vein",
+            "F": 1,
+            "V_total": 2,
+            "lambda_phys": lambda_phys,
+        }
+
+        self.Art = {
+            "name": "Art",
+            "F": 2,
+            "V_total": 0,
+            "lambda_phys": lambda_phys,
+        }
+
+        self.Lungs = {
+            "name": "Lungs",
+            "F": 1,
+            "PS": 1,
+            "V_total": 1,
+            "V_v": 2,
+            "V_int": 1,
+            "lambda_phys": lambda_phys,
+        }
+
+        self.receptorPositiveList = [self.org1, self.org2]
+        self.receptorNegativeList = [self.org3]
+        self.calculateTotalF()
         self.ArtVeinList = [self.Art, self.Vein]
-        self.receptorNegativeList = []
+
 
         self.Organs = {
             "ArtVein": self.ArtVeinList,
@@ -48,6 +91,18 @@ class Patient:
             "RecNeg": self.receptorNegativeList,
             "RecPos": self.receptorPositiveList,
         }
+
+
+    def calculateTotalF(self):
+        F = 0.0
+        for elem in self.receptorNegativeList:
+            F += elem['F']
+        for elem in self.receptorPositiveList:
+            F += elem['F']
+
+        self.Art['F'] = F
+        self.Vein['F'] = F
+        self.Lungs["F"] = F
 
 
 class Therapy:  ## Note that this is a single therapy not the Therapy plan.
@@ -81,25 +136,25 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*_intern": 5
         }
 
-        # self.org2 = {
-        #     "name": "org2",
-        #     "P_v": 0,
-        #     "P*_v": 0,
-        #     "P_int": 0,
-        #     "P*_int": 0,
-        #     "RP": 0,
-        #     "RP*": 0,
-        #     "P_intern": 0,
-        #     "P*_intern": 0
-        # }
-        #
-        # self.org3 = {
-        #     "name": "org2",
-        #     "P_v": 1,
-        #     "P*_v": 11,
-        #     "P_int": 111,
-        #     "P*_int": 1111
-        # }
+        self.org2 = {
+            "name": "org2",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
+            "P_intern": 0,
+            "P*_intern": 0
+        }
+
+        self.org3 = {
+            "name": "org3",
+            "P_v": 1,
+            "P*_v": 11,
+            "P_int": 111,
+            "P*_int": 1111
+        }
 
         self.Art = {
             "name": "Art",
@@ -121,9 +176,9 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*_int": 7,
         }
 
-        self.receptorPositiveList = [self.org1]
+        self.receptorPositiveList = [self.org1, self.org2]
         self.ArtVeinList = [self.Art, self.Vein]
-        self.receptorNegativeList = []
+        self.receptorNegativeList = [self.org3]
 
         self.Organs = {
             "ArtVein": self.ArtVeinList,
