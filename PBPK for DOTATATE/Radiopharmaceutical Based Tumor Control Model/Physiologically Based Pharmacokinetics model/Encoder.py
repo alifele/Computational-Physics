@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 ### BigVector contains all of the variables
-### V_Vector contains the volume of each variable (for example v_int for P_int and P*_int)
 ### SystemMat is the system matrix which includes all of the parameters and differential equations
 
 class Encoder:
@@ -10,7 +9,9 @@ class Encoder:
     def __init__(self, patient, therapy):
         self.organsObj = Organs(patient, therapy)
         self.bigVectEncoder = BigVectEncoder(self.organsObj)
-        systemMatricEncoder = SystemMatrixEncoder(self.organsObj)
+        self.systemMatricEncoder = SystemMatrixEncoder(self.organsObj)
+        self.BigVect = self.bigVectEncoder.BigVect
+        self.SystemMat = self.systemMatricEncoder.SystemMat
 
 
 class Organs:
@@ -40,17 +41,22 @@ class Organs:
             stencil = self.stencil
             stencil["length"] = length
 
-            for organ in self.therapy.Organs[type]:
+            for organ in self.patient.Organs[type]:
                 organDict = dict()
                 organDict["stencil"] = stencil.copy()
                 organDict["bigVectMap"] = self.typesMapDict_bigVect[type]
-                organDict["V_vectorMap"] = self.typesMapDict_V_Vect[type]
+                organDict["volumeMap"] = self.volumeMap
                 organDict["sysMatMap"] = self.typesMapDict_sysMat[type]
                 organDict["stencil"]["base"] = pointer
                 pointer += organDict["stencil"]["length"]
                 self.organsDict[type][organ["name"]] = organDict
                 organDict["name"] = organ["name"]
                 organDict["type"] = type
+
+                if type == "RecPos":
+                    organDict["R0"] = organ["R0"]
+                    organDict["k_on"] = organ["k_on"]
+
 
     def defineLowLevelVariables(self):
         self.typeLengthDict = {self.typesList[0]: 2,
@@ -82,15 +88,8 @@ class Organs:
                                      self.typesList[2]: RecNegMap_bigVect,
                                      self.typesList[3]: RecPosMap_bigVect}
 
-        ArtVeinMap_V_Vect = {"P": 0, "P*": 1}
-        RecNegMap_V_Vect = {"P_v": 0, "P*_v": 1, "P_int": 2, "P*_int": 3}
-        RecPosMap_V_Vect = {"P_v": 0, "P*_v": 1, "P_int": 2, "P*_int": 3, "RP": 4, "RP*": 5, "P_intern": 6,
-                             "P*_intern": 7}
-        self.typesMapDict_V_Vect = {self.typesList[0]: ArtVeinMap_V_Vect,
-                                     self.typesList[1]: RecNegMap_V_Vect,
-                                     ## This is for lungs which is a special kind of RecNeg
-                                     self.typesList[2]: RecNegMap_V_Vect,
-                                     self.typesList[3]: RecPosMap_V_Vect}
+
+        self.volumeMap = ["V_v", "V_v", "V_int", "V_int"]
 
 
         ArtVeinMap_sysMat = {"F": [[0, 0, -1], [1, 1, -1]],
@@ -139,18 +138,6 @@ class BigVectEncoder:
                     self.BigVect[pointer] = organ[variableName]
                     pointer += 1
 
-
-    # def createV_Vect(self):
-    #     self.V_Vect = np.zeros(self.organs.N)
-    #     pointer = 0
-    #     for type in self.organs.typesList:  ## ArtVein, Lungs, RecNeg, RecPos
-    #         for organ in self.organs.therapy.Organs[type]:
-    #             organDict = self.organs.organsDict[type][organ["name"]]
-    #             for variableName in organDict["V_VectMap"].keys():
-    #                 self.BigVect[pointer] = organ[variableName]
-    #                 pointer += 1
-
-
 class SystemMatrixEncoder:
     def __init__(self, organs):
         self.organs = organs
@@ -193,28 +180,37 @@ class SystemMatrixEncoder:
                     for elem in organDict["sysMatMap"][paramName]: ## [[0,0,-1],[1,1,-1],...]
                         sign = elem[-1]
                         pos = np.array(elem[:-1])
-
-                        subMat[pos[0], pos[1]] += sign*organ[paramName]
+                        if paramName in ["F", "PS", "K_on"]:
+                            subMat[pos[0], pos[1]] += sign*organ[paramName]/organ[organDict["volumeMap"][pos[1]]]
+                            ### Contents of organ[organDict["volumeMap"] is this list: ["V_v", "V_v", "V_int", "V_int"]
+                            ### That is because F,PS, and K_on parameters must be normalized by the volume corresponding
+                            ### to the column. Since in the sub matrix, column 0,1 are for the vascular compartment,
+                            ### and column 2,3 are for the interestitial compartments, I am using pos[1] to get the
+                            ### number of column and then by using the volume map list I can get the appropriate key
+                            ### and go and get the value from the patient object
+                        else:
+                            subMat[pos[0], pos[1]] += sign * organ[paramName]
 
                 x1 = subMat_initialPosition[0,0]
                 y1 = x1
                 x2 = x1 + L
                 y2 = x2
                 self.SystemMat[x1:x2, y1:y2] = subMat.copy()
-                if type == "RecPos" or type ==  "RecNeg": ## The outer F insertion
-                    self.SystemMat[x1, 0] = organ['F']
-                    self.SystemMat[x1+1, 1] = organ['F']
 
-                    self.SystemMat[2,x1] = organ['F']
-                    self.SystemMat[3,x1+1] = organ['F']
+                if type == "RecPos" or type ==  "RecNeg": ## The outer F insertion
+                    self.SystemMat[x1, 0] = organ['F']/self.organs.patient.Art["V_v"]
+                    self.SystemMat[x1+1, 1] = organ['F']/self.organs.patient.Art["V_v"]
+
+                    self.SystemMat[2,x1] = organ['F']/organ["V_v"]
+                    self.SystemMat[3,x1+1] = organ['F']/organ["V_v"]
 
                 if type == "Lungs":
                     shift =2
-                    self.SystemMat[x1,0+shift] = organ['F']
-                    self.SystemMat[x1+1,1+shift] = organ['F']
+                    self.SystemMat[x1,0+shift] = organ['F']/self.organs.patient.Vein["V_v"]
+                    self.SystemMat[x1+1,1+shift] = organ['F']/self.organs.patient.Vein["V_v"]
 
-                    self.SystemMat[0, x1] = organ['F']
-                    self.SystemMat[1, x1+1] = organ['F']
+                    self.SystemMat[0, x1] = organ['F']/organ["V_v"]
+                    self.SystemMat[1, x1+1] = organ['F']/organ["V_v"]
 
         print("Hello")
 
