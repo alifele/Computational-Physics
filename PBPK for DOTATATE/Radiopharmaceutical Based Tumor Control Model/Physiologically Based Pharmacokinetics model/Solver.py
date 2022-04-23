@@ -10,27 +10,28 @@ class Solver:
 
 
         t_0 = 0
-        t_f = 10
-        l = 12
+        t_f = 100
+        l = 8
         self.tList = np.arange(t_0, t_f, 2**(-l))
         self.h = self.tList[1] - self.tList[0]
 
 
         self.BigVectList = np.zeros((self.BigVect.shape[0], self.tList.shape[0]))
-        self.BigVectList[:,-1] = self.BigVect
+        self.BigVectList[:,0] = self.BigVect
+        self.BigVect_new = self.BigVect.copy()
 
 
 
 
-    def F(self, X):
-        SystemMat = self.getSystemMat(X)
+    def F(self, X, i):
+        SystemMat = self.getSystemMat(X, i)
         return np.matmul(SystemMat, X)
 
-    def getSystemMat(self, X):
+    def getSystemMat(self, X, i):
         SystemMat = self.SystemMat.copy()
-        for key in self.organsObj.organsDict["RecPos"].keys():
+        for key in self.organsObj.organsDict["RecPos"].keys():  ## RecPos Organs: Tumor, Liver, Kidney, etc
             organ = self.organsObj.organsDict["RecPos"][key]
-            BigVector_pre = self.BigVectList[:,-1]
+            BigVector_pre = self.BigVectList[:,i].copy()
             RP_index = organ["stencil"]["base"] + organ["bigVectMap"]["RP"]
             RP_unlabeled_index = organ["stencil"]["base"] + organ["bigVectMap"]["RP*"]
             K_on_pre = (organ["R0"] - (BigVector_pre[RP_index] + BigVector_pre[RP_unlabeled_index])) * organ["k_on"]
@@ -44,18 +45,20 @@ class Solver:
 
 
     def solve(self):
-        for t in self.tList[:-1]:
+        for i, t in enumerate(self.tList[:-1]):
 
-            f0 = self.F(self.BigVect)
-            f1 = self.F(self.BigVect+f0*self.h/2)
-            f2 = self.F(self.BigVect+f1*self.h/2)
-            f3 = self.F(self.BigVect+f2*self.h)
+            f0 = self.F(self.BigVect, i)
+            f1 = self.F(self.BigVect+f0*self.h/2, i)
+            f2 = self.F(self.BigVect+f1*self.h/2, i)
+            f3 = self.F(self.BigVect+f2*self.h, i)
 
-            self.BigVect += 1/6 * (f0 + 2*f1 + 2*f2 + f3)
-            self.SystemMat = self.getSystemMat(self.BigVect)
+            # self.BigVect += 1/6 * (f0 + 2*f1 + 2*f2 + f3)
+            self.BigVect_new = self.BigVect_new + 1/6 * (f0 + 2*f1 + 2*f2 + f3)
+            #self.SystemMat = self.getSystemMat(self.BigVect,i)
+            self.SystemMat = self.getSystemMat(self.BigVect_new,i)
 
-            self.BigVectList[:,-1] = self.BigVect.copy()
-
+            #self.BigVectList[:,i+1] = self.BigVect.copy()
+            self.BigVectList[:,i+1] = self.BigVect_new.copy()
         print("Hello")
 
 

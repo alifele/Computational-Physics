@@ -67,25 +67,42 @@ class Patient:
             v_tu_v = 0.11
             k_tu = 0.31  ## for PS calculation  ## L/min/Kg (See the comment in Data.py file under MuscleData
 
-        lambda_rel_tu = 1.5
+        lambda_rel_tu = 1.5 * 1e-4
         lambda_intern_tu = 0.001
 
 
+        # self.Tumor = {
+        #     "name": "Tumor",
+        #     "F": f_tu*(1-H)* V_tu,
+        #     "PS": k_tu*V_tu,
+        #     "V_total": V_tu,
+        #     "V_v": 1,
+        #     "V_int": v_tu_int * V_tu,
+        #     "k_on": k_on,
+        #     "k_off": k_off,
+        #     "lambda_intern": lambda_intern_tu,
+        #     "lambda_rel": lambda_rel_tu,
+        #     "lambda_phys": lambda_phys,
+        #     "R0": R_tu_density * V_tu,
+        #     "K_on": 0, ## R*k_on
+        # }
+
         self.Tumor = {
             "name": "Tumor",
-            "F": f_tu*(1-H)* V_tu,
-            "PS": k_tu*V_tu,
-            "V_total": V_tu,
+            "F": 5.0,
+            "PS": 1.0,
+            "V_total": 2,
             "V_v": 1,
-            "V_int": v_tu_int * V_tu,
-            "k_on": k_on,
-            "k_off": k_off,
-            "lambda_intern": lambda_intern_tu,
-            "lambda_rel": lambda_rel_tu,
-            "lambda_phys": lambda_phys,
-            "R0": R_tu_density * V_tu,
-            "K_on": 0, ## R*k_on
+            "V_int": 1,
+            "k_on": 1.0,
+            "k_off": 0.5,
+            "lambda_intern": 0.5,
+            "lambda_rel": 0.1,
+            "lambda_phys": 1.0,
+            "R0": 10.0,
+            "K_on": 0,  ## R*k_on
         }
+        self.Tumor['K_on'] = self.Tumor["R0"] * self.Tumor["k_on"]
 
         self.org2 = {
             "name": "org2",
@@ -132,23 +149,42 @@ class Patient:
         }
 
 
-        V_vein = (0.18 + 0.045) * V_p
+        # V_vein = (0.18 + 0.045) * V_p
+        # self.Vein = {
+        #     "name": "Vein",
+        #     "F": 0, ## The real value will be calculated once we have the
+        #     ## the flow of each organ. The Vein and Art flow is the sum of all
+        #     ## flows
+        #     "V_v": V_vein,
+        #     "lambda_phys": lambda_phys,
+        # }
+        #
+        # V_art = (0.06 + 0.045) * V_p
+        # self.Art = {
+        #     "name": "Art",
+        #     "F": 0,  ## The real value will be calculated once we have the
+        #     ## the flow of each organ. The Vein and Art flow is the sum of all flows
+        #     "V_v": V_art,
+        #     "lambda_phys": lambda_phys,
+        # }
+
+        V_vein = 1
         self.Vein = {
             "name": "Vein",
-            "F": 0, ## The real value will be calculated once we have the
+            "F": 0,  ## The real value will be calculated once we have the
             ## the flow of each organ. The Vein and Art flow is the sum of all
             ## flows
             "V_v": V_vein,
-            "lambda_phys": lambda_phys,
+            "lambda_phys": 1.0,
         }
 
-        V_art = (0.06 + 0.045) * V_p
+        V_art = 1
         self.Art = {
             "name": "Art",
-            "F": 0,  ## The real value will be calculated once we have the
+            "F": 0.0,  ## The real value will be calculated once we have the
             ## the flow of each organ. The Vein and Art flow is the sum of all flows
             "V_v": V_art,
-            "lambda_phys": lambda_phys,
+            "lambda_phys": 1.0,
         }
 
 
@@ -156,15 +192,26 @@ class Patient:
         V_lungs_v = 0.105 * V_p             ## [L]
         alpha_lungs = 5.5                   ## interestitial to vascular ratio
 
+        # self.Lungs = {
+        #     "name": "Lungs",
+        #     "F": 0,  # The real value will be calculated once we have the
+        #     ## the flow of each organ. The Vein and Art flow is the sum of all flows
+        #     "PS": k * V_lungs_total,
+        #     "V_total": V_lungs_total,
+        #     "V_v": V_lungs_v,
+        #     "V_int": alpha_lungs * V_lungs_v,
+        #     "lambda_phys": lambda_phys,
+        # }
+
         self.Lungs = {
             "name": "Lungs",
             "F": 0,  # The real value will be calculated once we have the
             ## the flow of each organ. The Vein and Art flow is the sum of all flows
-            "PS": k * V_lungs_total,
-            "V_total": V_lungs_total,
-            "V_v": V_lungs_v,
-            "V_int": alpha_lungs * V_lungs_v,
-            "lambda_phys": lambda_phys,
+            "PS":1.0,
+            "V_total": 2.0,
+            "V_v": 1,
+            "V_int": 1,
+            "lambda_phys": 1.0,
         }
 
         self.receptorPositiveList = [self.Tumor]
@@ -266,10 +313,16 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*": 0,
         }
 
+        # self.Vein = {
+        #     "name": "Vein",
+        #     "P": 0.5* 1e-5,             ## nmol
+        #     "P*": 0.5* 1e-5             ## nmol
+        # }
+
         self.Vein = {
             "name": "Vein",
-            "P": 0.5* 1e-5,             ## nmol
-            "P*": 0.5* 1e-5             ## nmol
+            "P": 10,  ## nmol
+            "P*": 10  ## nmol
         }
 
         self.Lungs = {
