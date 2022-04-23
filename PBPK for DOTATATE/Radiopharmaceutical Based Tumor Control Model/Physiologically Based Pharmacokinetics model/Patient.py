@@ -97,9 +97,9 @@ class Patient:
             "k_on": 1.0,
             "k_off": 0.5,
             "lambda_intern": 0.5,
-            "lambda_rel": 0.1,
-            "lambda_phys": 1.0,
-            "R0": 10.0,
+            "lambda_rel": 0.05,
+            "lambda_phys": 0.1,
+            "R0": 10,
             "K_on": 0,  ## R*k_on
         }
         self.Tumor['K_on'] = self.Tumor["R0"] * self.Tumor["k_on"]
@@ -138,14 +138,14 @@ class Patient:
             "F_exc": 1
         }
 
-        self.org3 = {
-            "name": "org3",
+        self.Skin = {
+            "name": "Skin",
             "F": 1,
-            "PS": 0,
+            "PS": 1,
             "V_total": 2,
             "V_v": 1,
             "V_int": 1,
-            "lambda_phys": lambda_phys,
+            "lambda_phys": 0.1,
         }
 
 
@@ -214,8 +214,8 @@ class Patient:
             "lambda_phys": 1.0,
         }
 
-        self.receptorPositiveList = [self.Tumor]
-        self.receptorNegativeList = []
+        self.receptorPositiveList = []
+        self.receptorNegativeList = [self.Skin]
         self.calculateTotalF()
         self.ArtVeinList = [self.Art, self.Vein]
 
@@ -299,12 +299,12 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*_intern": 0
         }
 
-        self.org3 = {
-            "name": "org3",
-            "P_v": 1,
-            "P*_v": 2,
-            "P_int": 3,
-            "P*_int": 4
+        self.Skin = {
+            "name": "Skin",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0
         }
 
         self.Art = {
@@ -333,9 +333,9 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*_int": 0,
         }
 
-        self.receptorPositiveList = [self.Tumor]
+        self.receptorPositiveList = []
         self.ArtVeinList = [self.Art, self.Vein]
-        self.receptorNegativeList = []
+        self.receptorNegativeList = [self.Skin]
 
         self.Organs = {
             "ArtVein": self.ArtVeinList,
@@ -359,7 +359,15 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "totalAmountCold": 10
         }
 
-        self.injectionProfile = bolusInjection
+        bolusTrainInjection = {
+            "type": "bolusTrain",  ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
+            "N": 1,
+            "t": [0],
+            "totalAmountHot": 10,
+            "totalAmountCold": 10
+        }
+
+        self.injectionProfile = bolusTrainInjection
 
 
 

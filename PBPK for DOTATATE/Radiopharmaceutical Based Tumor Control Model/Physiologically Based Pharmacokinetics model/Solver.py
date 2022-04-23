@@ -22,6 +22,9 @@ class Solver:
     def setInjection(self):
         self.totalHot = 0.0
         self.totalCold = 0.0
+        Vein_dict = self.organsObj.organsDict["ArtVein"]["Vein"]
+        self.Vein_index_cold = Vein_dict["stencil"]["base"] + Vein_dict["bigVectMap"]["P"]  ## the place of P_vein in the BigVect
+        self.Vein_index_hot = Vein_dict["stencil"]["base"] + Vein_dict["bigVectMap"]["P*"]  ## the place of P_vein in the BigVect
         if self.injectionProfile["type"] == "constant":
             t0 = self.injectionProfile["t0"]
             tf = self.injectionProfile["tf"]
@@ -31,11 +34,16 @@ class Solver:
         if self.injectionProfile["type"] == "bolus":
             self.singleBolusFlag = 0    ## This will help us to make sure that just one bolus will be injected
 
+        if self.injectionProfile["type"] == "bolusTrain":
+            self.multiBolusFlag = 0     ## This will help us to inject exactly N boluses
+            self.eachBolusCold = self.injectionProfile["totalAmountCold"] / self.injectionProfile["N"]
+            self.eachBolusHot = self.injectionProfile["totalAmountHot"] / self.injectionProfile["N"]
+
 
 
     def setSimConf(self):
         t_0 = 0
-        t_f = 50
+        t_f = 100
         l = 11
         self.tList = np.linspace(t_0, t_f, 2 ** (l))
         self.h = self.tList[1] - self.tList[0]
@@ -62,8 +70,8 @@ class Solver:
 
 
     def solve(self):
-        for i, t in enumerate(self.tList[1:]):
-
+        for j, t in enumerate(self.tList[1:]):
+            i = j+1 ## Note that the enumerate does not show the index of element.
             self.inject(t)
 
 
@@ -79,30 +87,45 @@ class Solver:
 
             #self.BigVectList[:,i+1] = self.BigVect.copy()
             self.BigVectList[:,i] = self.BigVect.copy()
+
+
+        ####  Debugging
+        # debugList = [9,11,13,15]
+        # peptide = self.BigVectList[0,:]*0
+        # for i in debugList:
+        #     peptide += self.BigVectList[i,:]
         print("Hello")
 
 
     def inject(self, t):
         if self.injectionProfile["type"] == "constant":
             if t < self.injectionProfile["tf"]:
-                Vein_dict = self.organsObj.organsDict["ArtVein"]["Vein"]
-                Vein_index_cold = Vein_dict["stencil"]["base"] + Vein_dict["bigVectMap"]["P"]   ## the place of P_vein in the BigVect
-                Vein_index_hot = Vein_dict["stencil"]["base"] + Vein_dict["bigVectMap"]["P*"]   ## the place of P_vein in the BigVect
-                self.BigVect[Vein_index_cold] += self.toInjectAtEachTimeStep_Cold
-                self.BigVect[Vein_index_hot] += self.toInjectAtEachTimeStep_Hot
+                self.BigVect[self.Vein_index_cold] += self.toInjectAtEachTimeStep_Cold
+                self.BigVect[self.Vein_index_hot] += self.toInjectAtEachTimeStep_Hot
                 self.totalHot += self.toInjectAtEachTimeStep_Hot
                 self.totalCold += self.toInjectAtEachTimeStep_Cold
 
         if self.injectionProfile["type"] == "bolus":
             if t >= self.injectionProfile["t0"] and self.singleBolusFlag == 0:
-                Vein_dict = self.organsObj.organsDict["ArtVein"]["Vein"]
-                Vein_index_cold = Vein_dict["stencil"]["base"] + Vein_dict["bigVectMap"]["P"]  ## the place of P_vein in the BigVect
-                Vein_index_hot = Vein_dict["stencil"]["base"] + Vein_dict["bigVectMap"]["P*"]  ## the place of P_vein in the BigVect
-                self.BigVect[Vein_index_cold] += self.injectionProfile["totalAmountCold"]
-                self.BigVect[Vein_index_hot] += self.injectionProfile["totalAmountHot"]
+                self.BigVect[self.Vein_index_cold] += self.injectionProfile["totalAmountCold"]
+                self.BigVect[self.Vein_index_hot] += self.injectionProfile["totalAmountHot"]
                 self.totalCold += self.injectionProfile["totalAmountCold"]
                 self.totalHot += self.injectionProfile["totalAmountHot"]
                 self.singleBolusFlag = 1
+
+        ## TODO: I think I need to fix something. when I only have
+        ## RecNeg organ, with 5 bolus trains and total amount of 10,
+        ## instead of 10*2 total peptide in body (cold + disintegerated hot), I get
+        ## 5 * (10*2). There must be something wrong
+        if self.injectionProfile["type"] == "bolusTrain":
+            if self.multiBolusFlag != self.injectionProfile["N"]:
+                if t >= self.injectionProfile["t"][self.multiBolusFlag]:
+                    self.BigVect[self.Vein_index_cold] += self.injectionProfile["totalAmountCold"]
+                    self.BigVect[self.Vein_index_hot] += self.injectionProfile["totalAmountHot"]
+                    self.totalCold += self.eachBolusCold
+                    self.totalHot += self.eachBolusHot
+                    self.multiBolusFlag += 1
+
 
 
 
