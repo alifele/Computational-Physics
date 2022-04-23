@@ -321,8 +321,8 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
 
         self.Vein = {
             "name": "Vein",
-            "P": 14,  ## nmol
-            "P*": 14  ## nmol
+            "P": 0,  ## nmol
+            "P*": 0  ## nmol
         }
 
         self.Lungs = {
@@ -344,14 +344,22 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "RecPos": self.receptorPositiveList,
         }
 
-        self.injectionProfile = {
-            "type": "nan",    ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
+        constantInjection = {
+            "type": "constant",    ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
             "t0": 0,
             "tf": 10,
             "totalAmountHot": 10,
             "totalAmountCold": 10
         }
 
+        bolusInjection = {
+            "type": "bolus",  ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
+            "t0": 5,
+            "totalAmountHot": 10,
+            "totalAmountCold": 10
+        }
+
+        self.injectionProfile = bolusInjection
 
 
 
