@@ -8,6 +8,9 @@ class Solver:
         self.BigVect = encoder.BigVect.copy()
         self.organsObj = encoder.organsObj
 
+        self.injectionProfile = self.organsObj.therapy.injectionProfile
+
+
 
         t_0 = 0
         t_f = 50
@@ -18,6 +21,12 @@ class Solver:
 
         self.BigVectList = np.zeros((self.BigVect.shape[0], self.tList.shape[0]))
         self.BigVectList[:,0] = self.BigVect.copy()
+
+        if self.injectionProfile["type"] == "constant":
+            t0 = self.injectionProfile["t0"]
+            tf = self.injectionProfile["tf"]
+            self.toInjectAtEachTimeStep_Hot = self.injectionProfile["totalAmountHot"]/(self.h * (tf - t0))    ## injection amount at each time step
+            self.toInjectAtEachTimeStep_Cold = self.injectionProfile["totalAmountCold"]/(self.h * (tf - t0))    ## injection amount at each time step
 
 
 
@@ -47,6 +56,9 @@ class Solver:
     def solve(self):
         for i, t in enumerate(self.tList[:-1]):
 
+            self.inject(t)
+
+
             f0 = self.F(self.BigVect, i)
             f1 = self.F(self.BigVect+f0*self.h/2, i)
             f2 = self.F(self.BigVect+f1*self.h/2, i)
@@ -60,6 +72,20 @@ class Solver:
             #self.BigVectList[:,i+1] = self.BigVect.copy()
             self.BigVectList[:,i+1] = self.BigVect.copy()
         print("Hello")
+
+
+    def inject(self, t):
+        self.BigVect[2] += 0.1*self.h
+        self.BigVect[3] += 0.1*self.h
+        if self.injectionProfile["type"] == "constant":
+            if t < self.injectionProfile["tf"]:
+                Vein_dict = self.organsObj.organsDict["ArtVein"]["Vein"]
+                Vein_index_cold = Vein_dict["stencil"]["base"] + Vein_dict["bigVectMap"]["P"]   ## the place of P_vein in the BigVect
+                Vein_index_hot = Vein_dict["stencil"]["base"] + Vein_dict["bigVectMap"]["P*"]   ## the place of P_vein in the BigVect
+                self.BigVect[Vein_index_cold] += self.toInjectAtEachTimeStep_Cold
+                self.BigVect[Vein_index_hot] += self.toInjectAtEachTimeStep_Hot
+
+
 
 
 
