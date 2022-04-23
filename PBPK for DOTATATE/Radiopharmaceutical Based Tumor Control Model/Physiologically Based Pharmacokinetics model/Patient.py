@@ -321,7 +321,7 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
 
         self.Vein = {
             "name": "Vein",
-            "P": 10,  ## nmol
+            "P": 0,  ## nmol
             "P*": 10  ## nmol
         }
 

@@ -1,24 +1,24 @@
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 
 class Solver:
     def __init__(self, encoder):
-        self.SystemMat = encoder.SystemMat
-        self.BigVect = encoder.BigVect
+        self.SystemMat = encoder.SystemMat.copy()
+        self.BigVect = encoder.BigVect.copy()
         self.organsObj = encoder.organsObj
 
 
         t_0 = 0
-        t_f = 100
-        l = 8
-        self.tList = np.arange(t_0, t_f, 2**(-l))
+        t_f = 50
+        l = 11
+        self.tList = np.linspace(t_0, t_f, 2**(l))
         self.h = self.tList[1] - self.tList[0]
 
 
         self.BigVectList = np.zeros((self.BigVect.shape[0], self.tList.shape[0]))
-        self.BigVectList[:,0] = self.BigVect
-        self.BigVect_new = self.BigVect.copy()
+        self.BigVectList[:,0] = self.BigVect.copy()
+
 
 
 
@@ -53,12 +53,12 @@ class Solver:
             f3 = self.F(self.BigVect+f2*self.h, i)
 
             # self.BigVect += 1/6 * (f0 + 2*f1 + 2*f2 + f3)
-            self.BigVect_new = self.BigVect_new + 1/6 * (f0 + 2*f1 + 2*f2 + f3)
+            self.BigVect = self.BigVect + self.h/6 * (f0 + 2*f1 + 2*f2 + f3)
             #self.SystemMat = self.getSystemMat(self.BigVect,i)
-            self.SystemMat = self.getSystemMat(self.BigVect_new,i)
+            self.SystemMat = self.getSystemMat(self.BigVect,i)
 
             #self.BigVectList[:,i+1] = self.BigVect.copy()
-            self.BigVectList[:,i+1] = self.BigVect_new.copy()
+            self.BigVectList[:,i+1] = self.BigVect.copy()
         print("Hello")
 
 
