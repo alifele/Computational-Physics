@@ -45,18 +45,14 @@ class Patient:
         ## PS = 1000 * k * V  (Note that V is in Litre). So PS will have the units of ml/min. Now to get the standard
         ## units of (L/min) we need to multiply it at 0.001. So PS with standard units (L/min) will be: PS = k*V
 
-
-
         if gender == "male":
             V_p = 2.8 * (1 - H) * BSA           ## Volume of total body serum
         else:
             V_p = 2.4 * (1 - H) * BSA           ## Volume of total body serum
 
-
         #F = 1.23 * V_p
 
 
-        ### Tumor initialization
 
         if tumorType == "NET":
             v_tu_int = 0.3
@@ -122,20 +118,36 @@ class Patient:
 
         self.Kidney = {
             "name": "Kidney",
-            "F": 1,
+            "F": 2,
             "V_total": 2,
             "V_v": 1,
             "V_int": 1,
-            "k_on": 0,
-            "k_off": 1,
-            "lambda_intern": lambda_intern,
-            "lambda_rel": lambda_rel,
-            "lambda_phys": lambda_phys,
-            "R0": 0,
+            "V_intra": 1,
+            "k_on": 10,
+            "k_off": 5,
+            "lambda_intern": 0.5,
+            "lambda_rel": 0.1,
+            "lambda_phys": 0.1,
+            "R0": 10,
             "K_on": 0,  ## R*k_on
             "phi": 1.1002,
             "GFR":  1,
-            "F_exc": 1
+            "f_exc": 1,
+            "F_fil": 0,     ## F_filtration = GFR * phi
+            "F_R": 0,       ## F_Return = F_fill - F_exc = GFR * phi * (1-f_exc)
+        }
+        self.Kidney["F_fil"] = self.Kidney["GFR"] * self.Kidney["phi"]
+        self.Kidney["F_R"] = self.Kidney["F_fil"] * (1-self.Kidney["f_exc"])
+
+        self.Lungs = {
+            "name": "Lungs",
+            "F": 0,  # The real value will be calculated once we have the
+            ## the flow of each organ. The Vein and Art flow is the sum of all flows
+            "PS": 1.0,
+            "V_total": 2.0,
+            "V_v": 1,
+            "V_int": 1,
+            "lambda_phys": 1.0,
         }
 
         self.Skin = {
@@ -175,7 +187,7 @@ class Patient:
             ## the flow of each organ. The Vein and Art flow is the sum of all
             ## flows
             "V_v": V_vein,
-            "lambda_phys": 1.0,
+            "lambda_phys": 0.1,
         }
 
         V_art = 1
@@ -184,7 +196,7 @@ class Patient:
             "F": 0.0,  ## The real value will be calculated once we have the
             ## the flow of each organ. The Vein and Art flow is the sum of all flows
             "V_v": V_art,
-            "lambda_phys": 1.0,
+            "lambda_phys": 0.1,
         }
 
 
@@ -203,33 +215,28 @@ class Patient:
         #     "lambda_phys": lambda_phys,
         # }
 
-        self.Lungs = {
-            "name": "Lungs",
-            "F": 0,  # The real value will be calculated once we have the
-            ## the flow of each organ. The Vein and Art flow is the sum of all flows
-            "PS":1.0,
-            "V_total": 2.0,
-            "V_v": 1,
-            "V_int": 1,
-            "lambda_phys": 1.0,
-        }
 
-        self.receptorPositiveList = []
+
+        self.receptorPositiveList = [self.Tumor]
+        self.KidneyList = [self.Kidney]
         self.receptorNegativeList = [self.Skin]
         self.calculateTotalF()
         self.ArtVeinList = [self.Art, self.Vein]
 
-
+        self.calculateK_on()    ## Will calculate K_on = k_on * R0 for RecPos and Kidney
         self.Organs = {
             "ArtVein": self.ArtVeinList,
             "Lungs": [self.Lungs],
             "RecNeg": self.receptorNegativeList,
             "RecPos": self.receptorPositiveList,
+            "Kidney": self.KidneyList,
         }
 
 
     def calculateK_on(self):
         for elem in self.receptorPositiveList:
+            elem["K_on"] = elem["k_on"] * elem["R0"]
+        for elem in self.KidneyList:
             elem["K_on"] = elem["k_on"] * elem["R0"]
 
     def calculateTotalF(self):
@@ -238,136 +245,9 @@ class Patient:
             F += elem['F']
         for elem in self.receptorPositiveList:
             F += elem['F']
+        for elem in self.KidneyList:
+            F += elem["F"]
 
         self.Art['F'] = F
         self.Vein['F'] = F
         self.Lungs["F"] = F
-
-
-class Therapy:  ## Note that this is a single therapy not the Therapy plan.
-
-    ## This class will include the initial values of the H and C values in organs
-    ## This will also include the time of injection and the profile of injection
-
-    ## Profiles of Injection:
-    ## 1. Bolus Injection
-    ## 2. Exponential Injection (e^(-x))
-    ## 3. Gaussian Injection
-    ## 4. Multiple impulse injection (impulse train)
-
-    ## Note that in each of these injection types, the solution that is getting injected is the same
-    ## during the injection profile. But we can also have some other options like varying H-C during
-    ## the injection.
-
-
-    def __init__(self):
-
-
-        self.Tumor = {
-            "name": "Tumor",
-            "P_v": 0,
-            "P*_v": 0,
-            "P_int": 0,
-            "P*_int": 0,
-            "RP": 0,
-            "RP*": 0,
-            "P_intern": 0,
-            "P*_intern": 0
-        }
-
-        self.org2 = {
-            "name": "org2",
-            "P_v": 1,
-            "P*_v": 1,
-            "P_int": 1,
-            "P*_int": 1,
-            "RP": 1,
-            "RP*": 1,
-            "P_intern": 0,
-            "P*_intern": 0
-        }
-
-        self.Kidney = {
-            "name": "Kidney",
-            "P_v": 1,
-            "P*_v": 1,
-            "P_int": 1,
-            "P*_int": 1,
-            "RP": 1,
-            "RP*": 1,
-            "P_intern": 0,
-            "P*_intern": 0
-        }
-
-        self.Skin = {
-            "name": "Skin",
-            "P_v": 0,
-            "P*_v": 0,
-            "P_int": 0,
-            "P*_int": 0
-        }
-
-        self.Art = {
-            "name": "Art",
-            "P": 0,
-            "P*": 0,
-        }
-
-        # self.Vein = {
-        #     "name": "Vein",
-        #     "P": 0.5* 1e-5,             ## nmol
-        #     "P*": 0.5* 1e-5             ## nmol
-        # }
-
-        self.Vein = {
-            "name": "Vein",
-            "P": 0,  ## nmol
-            "P*": 0  ## nmol
-        }
-
-        self.Lungs = {
-            "name": "Lungs",
-            "P_v": 0,
-            "P*_v": 0,
-            "P_int": 0,
-            "P*_int": 0,
-        }
-
-        self.receptorPositiveList = []
-        self.ArtVeinList = [self.Art, self.Vein]
-        self.receptorNegativeList = [self.Skin]
-
-        self.Organs = {
-            "ArtVein": self.ArtVeinList,
-            "Lungs": [self.Lungs],
-            "RecNeg": self.receptorNegativeList,
-            "RecPos": self.receptorPositiveList,
-        }
-
-        constantInjection = {
-            "type": "constant",    ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
-            "t0": 0,
-            "tf": 10,
-            "totalAmountHot": 10,
-            "totalAmountCold": 10
-        }
-
-        bolusInjection = {
-            "type": "bolus",  ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
-            "t0": 5,
-            "totalAmountHot": 10,
-            "totalAmountCold": 10
-        }
-
-        bolusTrainInjection = {
-            "type": "bolusTrain",  ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
-            "N": 1,
-            "t": [0],
-            "totalAmountHot": 10,
-            "totalAmountCold": 10
-        }
-
-        self.injectionProfile = bolusTrainInjection
-
-
-

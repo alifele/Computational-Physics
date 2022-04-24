@@ -43,8 +43,8 @@ class Solver:
 
     def setSimConf(self):
         t_0 = 0
-        t_f = 100
-        l = 11
+        t_f = 150
+        l = 13
         self.tList = np.linspace(t_0, t_f, 2 ** (l))
         self.h = self.tList[1] - self.tList[0]
 
@@ -120,8 +120,8 @@ class Solver:
         if self.injectionProfile["type"] == "bolusTrain":
             if self.multiBolusFlag != self.injectionProfile["N"]:
                 if t >= self.injectionProfile["t"][self.multiBolusFlag]:
-                    self.BigVect[self.Vein_index_cold] += self.injectionProfile["totalAmountCold"]
-                    self.BigVect[self.Vein_index_hot] += self.injectionProfile["totalAmountHot"]
+                    self.BigVect[self.Vein_index_cold] += self.eachBolusCold
+                    self.BigVect[self.Vein_index_hot] += self.eachBolusHot
                     self.totalCold += self.eachBolusCold
                     self.totalHot += self.eachBolusHot
                     self.multiBolusFlag += 1

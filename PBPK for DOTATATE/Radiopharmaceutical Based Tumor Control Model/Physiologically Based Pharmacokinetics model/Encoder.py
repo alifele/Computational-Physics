@@ -19,14 +19,15 @@ class Organs:
     def __init__(self, patientObj, therapyObj):
         self.patient = patientObj
         self.therapy = therapyObj
-        self.typesList = ["ArtVein", "Lungs", "RecNeg", "RecPos"]
+        self.typesList = ["ArtVein", "Lungs", "RecNeg", "RecPos", "Kidney"]
 
         self.defineLowLevelVariables()
 
         self.organsDict = {self.typesList[0]: self.ArtVeinDict,
                            self.typesList[1]: self.LungsDict,  ## This is for lungs which is a special kind of RecNeg
                            self.typesList[2]: self.RecNegDict,
-                           self.typesList[3]: self.RecPosDict}
+                           self.typesList[3]: self.RecPosDict,
+                           self.typesList[4]: self.KidneyDict}
 
         self.initOrgansDict()
 
@@ -36,7 +37,7 @@ class Organs:
 
     def initOrgansDict(self):
         pointer = 0
-        for i, type in enumerate(self.typesList):  ## ArtVein, Lungs, RecNeg, RecPos
+        for i, type in enumerate(self.typesList):  ## ArtVein, Lungs, RecNeg, RecPos, Kidney
             length = self.typeLengthDict[type]
             stencil = self.stencil
             stencil["length"] = length
@@ -53,7 +54,7 @@ class Organs:
                 organDict["name"] = organ["name"]
                 organDict["type"] = type
 
-                if type == "RecPos":
+                if type in ["RecPos", "Kidney"]:
                     organDict["R0"] = organ["R0"]
                     organDict["k_on"] = organ["k_on"]
 
@@ -62,13 +63,15 @@ class Organs:
         self.typeLengthDict = {self.typesList[0]: 2,
                                self.typesList[1]: 4,  ## This is the lungs which is a special kind of Recp Neg
                                self.typesList[2]: 4,
-                               self.typesList[3]: 8}  ## This is the number of variable for each organ type
+                               self.typesList[3]: 8,
+                               self.typesList[4]: 10}  ## This is the number of variable for each organ type
         ## For example lungs organ (which is RecNeg) has four variable: P_v, P*_v, P_int, P*_int
 
         self.ArtVeinDict = dict()
         self.LungsDict = dict()
         self.RecNegDict = dict()
         self.RecPosDict = dict()
+        self.KidneyDict = dict()
 
         self.stencil = {"base": 0, "length": 0}  ## This stencil will help to make the BigVector variable
         ## stencil contains the base and length. For example for organ_i base
@@ -82,11 +85,15 @@ class Organs:
         RecNegMap_bigVect = {"P_v": 0, "P*_v": 1, "P_int": 2, "P*_int": 3}
         RecPosMap_bigVect = {"P_v": 0, "P*_v": 1, "P_int": 2, "P*_int": 3, "RP": 4, "RP*": 5, "P_intern": 6,
                              "P*_intern": 7}
+
+        KidneyMap_bigVect = {"P_v": 0, "P*_v": 1, "P_intra": 2, "P*_intra": 3, "P_int": 4, "P*_int": 5, "RP": 6,
+                             "RP*": 7, "P_intern": 8, "P*_intern": 9}
         self.typesMapDict_bigVect = {self.typesList[0]: ArtVeinMap_bigVect,
                                      self.typesList[1]: RecNegMap_bigVect,
-                                     ## This is for lungs which is a special kind of RecNeg
-                                     self.typesList[2]: RecNegMap_bigVect,
-                                     self.typesList[3]: RecPosMap_bigVect}
+                                     self.typesList[2]: RecNegMap_bigVect, ## This is for lungs which is a special kind of RecNeg
+                                     self.typesList[3]: RecPosMap_bigVect,
+                                     self.typesList[4]: KidneyMap_bigVect  ## This is for Kidney
+                                     }
 
 
         self.volumeMap = ["V_v", "V_v", "V_int", "V_int"]
@@ -111,10 +118,22 @@ class Organs:
                                             [6, 7, +1],
                                             [7, 7, -1]]}
 
+        KidneyMap_sysMat = {"F": [[0, 0, -1], [1, 1, -1]],
+                            "F_fil": [[0, 0, -1], [1, 1, - 1], [4, 0, 1], [4, 4, -1], [5, 1, 1], [5, 5, -1]],
+                            "F_R": [[0, 2, 1], [1, 3, 1], [2, 2, -1], [2, 4, 1], [3, 3, -1], [3, 5, 1]],
+                            "K_on": [[4, 4, -1], [5, 5, -1], [6, 4, +1], [7, 5, +1]],
+                            "k_off": [[4, 6, +1], [5, 7, +1], [6, 6, -1], [7, 7, -1]],
+                            "lambda_intern": [[6, 6, -1], [7, 7, -1], [8, 6, +1], [9, 7, +1]],
+                            "lambda_rel": [[8, 8, -1], [9, 9, -1]],
+                            "lambda_phys": [[0, 1, +1], [1, 1, -1], [2, 3, +1], [3, 3, -1], [4, 5, +1], [5, 5, -1],
+                                            [6, 7, +1], [7, 7, -1], [8, 9, +1], [9, 9, -1]]}
+
         self.typesMapDict_sysMat = {self.typesList[0]: ArtVeinMap_sysMat,
-                             self.typesList[1]: RecNegMap_sysMat,  ## This is for lungs which is a special kind of RecNeg
-                             self.typesList[2]: RecNegMap_sysMat,
-                             self.typesList[3]: RecPosMap_sysMat}
+                                     self.typesList[1]: RecNegMap_sysMat,  ## This is for lungs which is a special kind of RecNeg
+                                     self.typesList[2]: RecNegMap_sysMat,
+                                     self.typesList[3]: RecPosMap_sysMat,
+                                     self.typesList[4]: KidneyMap_sysMat
+                                    }
 
 
 class BigVectEncoder:
@@ -147,9 +166,8 @@ class SystemMatrixEncoder:
         self.SystemMat = np.zeros((self.organs.N,self.organs.N))
         pointer = 0
         #debugList = [self.organs.typesList["RecPos"]]
-        debugList = ["RecPos", "RecNeg", "Lungs"]
-        for type in self.organs.typesList:  ## ArtVein, Lungs, RecNeg, RecPos
-            for organ in self.organs.patient.Organs[type]:  ## [Art, Vein] | [Lungs] | [RecNeg1, RecNeg2, ...] | [RecPos1, ...]
+        for type in self.organs.typesList:  ## ArtVein, Lungs, RecNeg, RecPos, Kidney
+            for organ in self.organs.patient.Organs[type]:  ## [Art, Vein] | [Lungs] | [RecNeg1, RecNeg2, ...] | [RecPos1, ...] | [Kidney]
                 organDict = self.organs.organsDict[type][organ["name"]]
                 subMat_initialPosition = np.array([ [organDict["stencil"]["base"], organDict["stencil"]["base"]] ]) ## [8,8]
                 L = organDict["stencil"]["length"]  ## Length of sub matrix
@@ -180,14 +198,20 @@ class SystemMatrixEncoder:
                     for elem in organDict["sysMatMap"][paramName]: ## [[0,0,-1],[1,1,-1],...]
                         sign = elem[-1]
                         pos = np.array(elem[:-1])
-                        if paramName in ["F", "PS", "K_on"]:
-                            subMat[pos[0], pos[1]] += sign*organ[paramName]/organ[organDict["volumeMap"][pos[1]]]
-                            ### Contents of organ[organDict["volumeMap"] is this list: ["V_v", "V_v", "V_int", "V_int"]
-                            ### That is because F,PS, and K_on parameters must be normalized by the volume corresponding
-                            ### to the column. Since in the sub matrix, column 0,1 are for the vascular compartment,
-                            ### and column 2,3 are for the interestitial compartments, I am using pos[1] to get the
-                            ### number of column and then by using the volume map list I can get the appropriate key
-                            ### and go and get the value from the patient object
+
+
+                        if paramName in ["F", "PS", "K_on", "F_fil", "F_R"]:    ## Normalizing with Volume
+                            if organDict["name"] == "Kidney":       ## For Kidney that has a different volumeMap
+                                volumeMap = ["V_v", "V_v", "V_intra", "V_intra", "V_int", "V_int"]
+                                subMat[pos[0], pos[1]] += sign * organ[paramName] / organ[volumeMap[pos[1]]]
+                            else:
+                                subMat[pos[0], pos[1]] += sign*organ[paramName]/organ[organDict["volumeMap"][pos[1]]]
+                                ### Contents of organ[organDict["volumeMap"] is this list: ["V_v", "V_v", "V_int", "V_int"]
+                                ### That is because F,PS, and K_on parameters must be normalized by the volume corresponding
+                                ### to the column. Since in the sub matrix, column 0,1 are for the vascular compartment,
+                                ### and column 2,3 are for the interestitial compartments, I am using pos[1] to get the
+                                ### number of column and then by using the volume map list I can get the appropriate key
+                                ### and go and get the value from the patient object
                         else:
                             subMat[pos[0], pos[1]] += sign * organ[paramName]
 
@@ -197,7 +221,7 @@ class SystemMatrixEncoder:
                 y2 = x2
                 self.SystemMat[x1:x2, y1:y2] = subMat.copy()
 
-                if type == "RecPos" or type ==  "RecNeg": ## The outer F insertion
+                if type in ["RecPos", "RecNeg", "Kidney"]  : ## The outer F insertion
                     self.SystemMat[x1, 0] = organ['F']/self.organs.patient.Art["V_v"]
                     self.SystemMat[x1+1, 1] = organ['F']/self.organs.patient.Art["V_v"]
 
