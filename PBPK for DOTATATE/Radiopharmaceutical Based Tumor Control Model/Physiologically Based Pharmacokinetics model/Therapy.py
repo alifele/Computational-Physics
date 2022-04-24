@@ -17,8 +17,6 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
 
 
     def __init__(self):
-
-
         self.Tumor = {
             "name": "Tumor",
             "P_v": 0,
@@ -31,14 +29,26 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*_intern": 0
         }
 
-        self.org2 = {
-            "name": "org2",
-            "P_v": 1,
-            "P*_v": 1,
-            "P_int": 1,
-            "P*_int": 1,
-            "RP": 1,
-            "RP*": 1,
+        self.Spleen = {
+            "name": "Spleen",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
+            "P_intern": 0,
+            "P*_intern": 0
+        }
+
+        self.Liver = {
+            "name": "Liver",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
             "P_intern": 0,
             "P*_intern": 0
         }
@@ -57,8 +67,112 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*_intern": 0
         }
 
+        self.RedMarrow = {
+            "name": "RedMarrow",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
+            "P_intern": 0,
+            "P*_intern": 0
+        }
+
+        self.GI = {
+            "name": "GI",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
+            "P_intern": 0,
+            "P*_intern": 0
+        }
+
+        self.Muscle = {
+            "name": "Muscle",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
+            "P_intern": 0,
+            "P*_intern": 0
+        }
+
+        self.ProstateUterus = {
+            "name": "ProstateUterus",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
+            "P_intern": 0,
+            "P*_intern": 0
+        }
+
+        self.Adrenals = {
+            "name": "Adrenals",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
+            "P_intern": 0,
+            "P*_intern": 0
+        }
+
+        self.Rest = {
+            "name": "Rest",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0,
+            "RP": 0,
+            "RP*": 0,
+            "P_intern": 0,
+            "P*_intern": 0
+        }
+
         self.Skin = {
             "name": "Skin",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0
+        }
+
+        self.Heart = {
+            "name": "Heart",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0
+        }
+
+        self.Bone = {
+            "name": "Bone",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0
+        }
+
+        self.Brain = {
+            "name": "Brain",
+            "P_v": 0,
+            "P*_v": 0,
+            "P_int": 0,
+            "P*_int": 0
+        }
+
+        self.Adipose = {
+            "name": "Adipose",
             "P_v": 0,
             "P*_v": 0,
             "P_int": 0,
@@ -70,12 +184,6 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P": 0,
             "P*": 0,
         }
-
-        # self.Vein = {
-        #     "name": "Vein",
-        #     "P": 0.5* 1e-5,             ## nmol
-        #     "P*": 0.5* 1e-5             ## nmol
-        # }
 
         self.Vein = {
             "name": "Vein",
@@ -91,9 +199,10 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*_int": 0,
         }
 
-        self.receptorPositiveList = [self.Tumor]
+        self.receptorPositiveList = [self.Tumor, self.Liver, self.Spleen, self.RedMarrow, self.GI,
+                                     self.Muscle, self.ProstateUterus, self.Adrenals, self.Rest]
         self.KidneyList = [self.Kidney]
-        self.receptorNegativeList = [self.Skin]
+        self.receptorNegativeList = [self.Skin, self.Adipose, self.Brain, self.Heart, self.Bone]
         self.ArtVeinList = [self.Art, self.Vein]
 
         self.Organs = {
@@ -108,16 +217,16 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
         constantInjection = {
             "type": "constant",    ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
             "t0": 0,
-            "tf": 10,
-            "totalAmountHot": 10,
-            "totalAmountCold": 10
+            "tf": 20,
+            "totalAmountHot": 0.5* 1e-7,
+            "totalAmountCold": 0.5* 1e-7
         }
 
         bolusInjection = {
             "type": "bolus",  ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
-            "t0": 5,
-            "totalAmountHot": 10,
-            "totalAmountCold": 10
+            "t0": 0,
+            "totalAmountHot": 0.5* 1e-7,
+            "totalAmountCold": 0.5* 1e-7
         }
 
         bolusTrainInjection = {

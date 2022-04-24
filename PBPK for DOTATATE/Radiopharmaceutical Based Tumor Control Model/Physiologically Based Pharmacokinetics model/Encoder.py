@@ -205,6 +205,8 @@ class SystemMatrixEncoder:
                                 volumeMap = ["V_v", "V_v", "V_intra", "V_intra", "V_int", "V_int"]
                                 subMat[pos[0], pos[1]] += sign * organ[paramName] / organ[volumeMap[pos[1]]]
                             else:
+                                # print(organDict["name"])
+                                # print(paramName)
                                 subMat[pos[0], pos[1]] += sign*organ[paramName]/organ[organDict["volumeMap"][pos[1]]]
                                 ### Contents of organ[organDict["volumeMap"] is this list: ["V_v", "V_v", "V_int", "V_int"]
                                 ### That is because F,PS, and K_on parameters must be normalized by the volume corresponding
