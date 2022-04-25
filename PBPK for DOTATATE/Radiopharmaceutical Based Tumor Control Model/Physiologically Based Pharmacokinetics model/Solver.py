@@ -43,8 +43,8 @@ class Solver:
 
     def setSimConf(self):
         t_0 = 0
-        t_f = 150        ## 75 for l=16 works best. So increase l by one if you do t_f = 150
-        l = 17
+        t_f = 1200        ## 75 for l=16 works best. So increase l by one if you do t_f = 150
+        l = 20
         self.tList = np.linspace(t_0, t_f, 2 ** (l))
         self.h = self.tList[1] - self.tList[0]
 

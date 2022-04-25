@@ -218,15 +218,15 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "type": "constant",    ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
             "t0": 0,
             "tf": 20,
-            "totalAmountHot": 0.5* 1e-7,
-            "totalAmountCold": 0.5* 1e-7
+            "totalAmountHot": 10,
+            "totalAmountCold": 10
         }
 
         bolusInjection = {
             "type": "bolus",  ## "bolus"  ## possible options: bolus, exponential, gaussian, bolusTrain, constant
             "t0": 0,
-            "totalAmountHot": 0.5* 1e-7,
-            "totalAmountCold": 0.5* 1e-7
+            "totalAmountHot": 10,   ## nmol
+            "totalAmountCold": 10   ## nmol
         }
 
         bolusTrainInjection = {
@@ -237,7 +237,7 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "totalAmountCold": 10
         }
 
-        self.injectionProfile = constantInjection
+        self.injectionProfile = bolusInjection
 
 
 
