@@ -14,7 +14,7 @@ class DataProcessing:
 
 
     def plotter(self):
-        for i in range(0, 110):##110
+        for i in range(4, 110):##110
             # plt.plot(self.results.tList, self.results.BigVectList[i, :])
             # # plt.plot(self.results.tList, self.results.BigVectList[i, :], 'o', 'red')
             plt.plot(self.data.t, self.data.y[i,:], label=i)

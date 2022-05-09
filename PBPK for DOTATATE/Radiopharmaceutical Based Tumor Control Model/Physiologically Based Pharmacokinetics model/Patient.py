@@ -535,6 +535,9 @@ class Patient:
 
         ## TODO: I think we can add the contribution on the V_total and V_v_total from
         ## TODO: ---> Vein, Art, and Lungs. I need to figure this out carefuly later
+
+
+
         V_total_rest = BW - V_total_allOrgans   ## 1kg = 1lit, ##L
         F_rest = F - F_allOrgans
         V_v_rest = V_p - V_v_allOrgans
@@ -546,7 +549,7 @@ class Patient:
             "name": "Rest",
             "F": F_rest,
             "PS": k_rest * V_total_rest,
-            "V_total": V_v_rest,
+            "V_total": V_total_rest,
             "V_v": V_v_rest,
             "V_int": V_int_rest,
             "k_on": k_on,
