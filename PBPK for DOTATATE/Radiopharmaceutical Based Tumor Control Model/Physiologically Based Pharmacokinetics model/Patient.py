@@ -2,6 +2,13 @@ import numpy as np
 
 
 
+##### Units for the simulation
+##  Volume  --> L
+##  Time    --> min
+##  Mass    --> gr
+##  Moles   --> nmol
+
+
 class Patient:
 
     def __init__(self):
@@ -235,8 +242,8 @@ class Patient:
             "name": "GI",
             "F": F_GI,
             "PS": k_GI * V_total_GI,
-            "V_total": V_v_GI,
-            "V_v": V_v_adrenal,
+            "V_total": V_total_GI,
+            "V_v": V_v_GI,
             "V_int": V_int_GI,
             "k_on": k_on,
             "k_off": k_off,
@@ -256,13 +263,13 @@ class Patient:
         alpha_RedMarrow = 3.7  ## interestitial to vascular ratio
         V_int_RedMarrow = alpha_RedMarrow * V_v_RedMarrow  # L
         F_RedMarrow = 0.03 * F
-        k_RedMarrow = k_mu
+        k_RedMarrow = k_mu*100
         R_density_RedMarrow = R_K_density * 0.028
         self.RedMarrow = {
             "name": "RedMarrow",
             "F": F_RedMarrow,
             "PS": k_RedMarrow * V_total_RedMarrow,
-            "V_total": V_v_RedMarrow,
+            "V_total": V_total_RedMarrow,
             "V_v": V_v_RedMarrow,
             "V_int": V_int_RedMarrow,
             "k_on": k_on,
@@ -289,7 +296,7 @@ class Patient:
             "name": "Muscle",
             "F": F_Muscle,
             "PS": k_Muscle * V_total_Muscle,
-            "V_total": V_v_Muscle,
+            "V_total": V_total_Muscle,
             "V_v": V_v_Muscle,
             "V_int": V_int_Muscle,
             "k_on": k_on,
@@ -371,6 +378,8 @@ class Patient:
         V_total_Brain = 1.45 * BW / 71  # L
         V_v_Brain = 0.012 * V_p  # L
         alpha_Brain = 1  ## interestitial to vascular ratio
+        ## Note that PS is zero for brain. To avoid division by zero I
+        ## have intentionally put alpha_Brain to be 1 (so V_int is not zero)
         V_int_Brain = alpha_Brain * V_v_Brain  # L
         F_Brain = 0.04 * F
         k_Brain = 0
@@ -500,10 +509,16 @@ class Patient:
 
 
     def calculateK_on(self):
+        # for elem in self.receptorPositiveList:
+        #     elem["K_on"] = elem["k_on"] * elem["R0"]
+        # for elem in self.KidneyList:
+        #     elem["K_on"] = elem["k_on"] * elem["R0"]
+        #
         for elem in self.receptorPositiveList:
-            elem["K_on"] = elem["k_on"] * elem["R0"]
+            elem["K_on"] = 0
         for elem in self.KidneyList:
-            elem["K_on"] = elem["k_on"] * elem["R0"]
+            elem["K_on"] = 0
+
 
 
     def addRestOrgan(self, BW, F, V_p, k_mu, R_rest_density, k_on, k_off, lambda_intern_tu, lambda_rel_NT, lambda_phys):
@@ -518,6 +533,8 @@ class Patient:
                 V_total_allOrgans += organ["V_total"]
                 V_v_allOrgans += organ["V_v"]
 
+        ## TODO: I think we can add the contribution on the V_total and V_v_total from
+        ## TODO: ---> Vein, Art, and Lungs. I need to figure this out carefuly later
         V_total_rest = BW - V_total_allOrgans   ## 1kg = 1lit, ##L
         F_rest = F - F_allOrgans
         V_v_rest = V_p - V_v_allOrgans

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
 
 
-class Solver:
+class MyStiffSolver:
     def __init__(self, encoder):
         self.SystemMat = encoder.SystemMat.copy()
         self.BigVect = encoder.BigVect.copy()
@@ -14,7 +14,7 @@ class Solver:
         self.setInjection()
 
         self.BigVectList = np.zeros((self.BigVect.shape[0], self.tList.shape[0]))
-        self.inject(0)  ## Doing the very first Injection
+        self.BigVect = self.inject(0, self.BigVect)  ## Doing the very first Injection
         self.BigVectList[:,0] = self.BigVect.copy()
 
 
@@ -48,50 +48,72 @@ class Solver:
         # l = 20
 
         t_0 = 0
-        t_f = 75        ## 75 for l=16 works best. So increase l by one if you do t_f = 150
+        t_f = 70        ## 75 for l=16 works best. So increase l by one if you do t_f = 150
         l = 16
         self.tList = np.linspace(t_0, t_f, 2 ** (l))
         self.h = self.tList[1] - self.tList[0]
 
-    def F(self, X, i):
-        SystemMat = self.getSystemMat(X, i)
-        return np.matmul(SystemMat, X)
+    def F(self, t, X):
+        X = self.inject(t, X)
+        B = self.getBFunction(X)
+        return np.matmul(self.SystemMat, X) + B
 
-    def getSystemMat(self, X, i):
-        SystemMat = self.SystemMat.copy()
 
-        ## TODO: Kidney needs to be added as well
-        for key in self.organsObj.organsDict["RecPos"].keys():  ## RecPos Organs: Tumor, Liver, Kidney, etc
-            organ = self.organsObj.organsDict["RecPos"][key]
-            BigVector_pre = self.BigVectList[:,i-1].copy()
-            RP_index = organ["stencil"]["base"] + organ["bigVectMap"]["RP"]
-            RP_unlabeled_index = organ["stencil"]["base"] + organ["bigVectMap"]["RP*"]
-            K_on_pre = (organ["R0"] - (BigVector_pre[RP_index] + BigVector_pre[RP_unlabeled_index])) * organ["k_on"]
-            K_on = (organ["R0"] - (X[RP_index] + X[RP_unlabeled_index])) * organ["k_on"]
-            for elem in organ["sysMatMap"]["K_on"]:
-                sign = elem[-1]
-                pos = np.array(elem[:-1]) + organ["stencil"]["base"]
-                SystemMat[pos[0], pos[1]] += sign*(K_on - K_on_pre)
+    def getBFunction(self, X):
+        B = np.zeros(X.shape)
+        organTypes = ["Kidney", "RecPos"]
+        for type in organTypes:
 
-        return SystemMat
+            for organ in self.organsObj.patient.Organs[type]:   ## Tumor, Kidney, etc
+                organDict = self.organsObj.organsDict[type][organ["name"]]
+
+                RP_index_labeled = organDict["stencil"]["base"] + organDict["bigVectMap"]["RP*"]
+                RP_unlabeled_index = organDict["stencil"]["base"] + organDict["bigVectMap"]["RP"]
+
+                P_int_labeled = organDict["stencil"]["base"] + organDict["bigVectMap"]["P*_int"]
+                P_int_unlabaled = organDict["stencil"]["base"] + organDict["bigVectMap"]["P_int"]
+
+                binded = X[RP_index_labeled] + X[RP_unlabeled_index]
+
+                B[RP_index_labeled] = organDict["k_on"]*X[P_int_labeled]*(organDict["R0"]- binded)/organ["V_int"]
+                B[RP_unlabeled_index] = organDict["k_on"]*X[P_int_unlabaled]*(organDict["R0"]- binded)/organ["V_int"]
+
+                B[P_int_labeled] = -organDict["k_on"] * X[P_int_labeled] * (organDict["R0"] - binded)/organ["V_int"]
+                B[P_int_unlabaled] = -organDict["k_on"] * X[P_int_unlabaled] * (organDict["R0"] - binded)/organ["V_int"]
+
+
+        return B
+
+    # def getSystemMat(self, X, i):
+    #     SystemMat = self.SystemMat.copy()
+    #     for key in self.organsObj.organsDict["RecPos"].keys():  ## RecPos Organs: Tumor, Liver, Kidney, etc
+    #         organ = self.organsObj.organsDict["RecPos"][key]
+    #         BigVector_pre = self.BigVectList[:,i-1].copy()
+    #         RP_index = organ["stencil"]["base"] + organ["bigVectMap"]["RP"]
+    #         RP_unlabeled_index = organ["stencil"]["base"] + organ["bigVectMap"]["RP*"]
+    #         K_on_pre = (organ["R0"] - (BigVector_pre[RP_index] + BigVector_pre[RP_unlabeled_index])) * organ["k_on"]
+    #         K_on = (organ["R0"] - (X[RP_index] + X[RP_unlabeled_index])) * organ["k_on"]
+    #         for elem in organ["sysMatMap"]["K_on"]:
+    #             sign = elem[-1]
+    #             pos = np.array(elem[:-1]) + organ["stencil"]["base"]
+    #             SystemMat[pos[0], pos[1]] += sign*(K_on - K_on_pre)
+    #
+    #     return SystemMat
 
 
     def solve(self):
         for j, t in enumerate(self.tList[1:]):
             i = j+1 ## Note that the enumerate does not show the index of element.
-            self.inject(t)
 
 
-            f0 = self.F(self.BigVect, i)
-            f1 = self.F(self.BigVect+f0*self.h/2, i)
-            f2 = self.F(self.BigVect+f1*self.h/2, i)
-            f3 = self.F(self.BigVect+f2*self.h, i)
+            f0 = self.F(t, self.BigVect)
+            f1 = self.F(t, self.BigVect+f0*self.h/2)
+            f2 = self.F(t, self.BigVect+f1*self.h/2)
+            f3 = self.F(t, self.BigVect+f2*self.h)
 
             # self.BigVect += 1/6 * (f0 + 2*f1 + 2*f2 + f3)
             self.BigVect = self.BigVect + self.h/6 * (f0 + 2*f1 + 2*f2 + f3)
             #self.SystemMat = self.getSystemMat(self.BigVect,i)
-            self.SystemMat = self.getSystemMat(self.BigVect,i)
-
             #self.BigVectList[:,i+1] = self.BigVect.copy()
             self.BigVectList[:,i] = self.BigVect.copy()
 
@@ -105,20 +127,23 @@ class Solver:
         # for i in debugList:
         #     peptide += self.BigVectList[i,:]
         print("Hello")
+        # self.solution = solve_ivp(self.F, [0,200], self.BigVect, method="RK45")
+        # print("hello")
 
 
-    def inject(self, t):
+
+    def inject(self, t, X):
         if self.injectionProfile["type"] == "constant":
             if t < self.injectionProfile["tf"]:
-                self.BigVect[self.Vein_index_cold] += self.toInjectAtEachTimeStep_Cold
-                self.BigVect[self.Vein_index_hot] += self.toInjectAtEachTimeStep_Hot
+                X[self.Vein_index_cold] += self.toInjectAtEachTimeStep_Cold
+                X[self.Vein_index_hot] += self.toInjectAtEachTimeStep_Hot
                 self.totalHot += self.toInjectAtEachTimeStep_Hot
                 self.totalCold += self.toInjectAtEachTimeStep_Cold
 
         if self.injectionProfile["type"] == "bolus":
             if t >= self.injectionProfile["t0"] and self.singleBolusFlag == 0:
-                self.BigVect[self.Vein_index_cold] += self.injectionProfile["totalAmountCold"]
-                self.BigVect[self.Vein_index_hot] += self.injectionProfile["totalAmountHot"]
+                X[self.Vein_index_cold] += self.injectionProfile["totalAmountCold"]
+                X[self.Vein_index_hot] += self.injectionProfile["totalAmountHot"]
                 self.totalCold += self.injectionProfile["totalAmountCold"]
                 self.totalHot += self.injectionProfile["totalAmountHot"]
                 self.singleBolusFlag = 1
@@ -130,11 +155,13 @@ class Solver:
         if self.injectionProfile["type"] == "bolusTrain":
             if self.multiBolusFlag != self.injectionProfile["N"]:
                 if t >= self.injectionProfile["t"][self.multiBolusFlag]:
-                    self.BigVect[self.Vein_index_cold] += self.eachBolusCold
-                    self.BigVect[self.Vein_index_hot] += self.eachBolusHot
+                    X[self.Vein_index_cold] += self.eachBolusCold
+                    X[self.Vein_index_hot] += self.eachBolusHot
                     self.totalCold += self.eachBolusCold
                     self.totalHot += self.eachBolusHot
                     self.multiBolusFlag += 1
+
+        return X
 
 
 

@@ -221,6 +221,7 @@ class SystemMatrixEncoder:
                 y1 = x1
                 x2 = x1 + L
                 y2 = x2
+                print(organ)
                 self.SystemMat[x1:x2, y1:y2] = subMat.copy()
 
                 if type in ["RecPos", "RecNeg", "Kidney"]  : ## The outer F insertion

@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.integrate import solve_ivp
 
 
-class Solver:
+class AdaptiveSolver:
     def __init__(self, encoder):
         self.SystemMat = encoder.SystemMat.copy()
         self.BigVect = encoder.BigVect.copy()
@@ -13,7 +12,7 @@ class Solver:
         self.setSimConf()
         self.setInjection()
 
-        self.BigVectList = np.zeros((self.BigVect.shape[0], self.tList.shape[0]))
+        self.BigVectList = np.zeros((self.BigVect.shape[0], self.dataPoints))
         self.inject(0)  ## Doing the very first Injection
         self.BigVectList[:,0] = self.BigVect.copy()
 
@@ -43,15 +42,13 @@ class Solver:
 
 
     def setSimConf(self):
-        # t_0 = 0
-        # t_f = 1200        ## 75 for l=16 works best. So increase l by one if you do t_f = 150
-        # l = 20
-
         t_0 = 0
-        t_f = 75        ## 75 for l=16 works best. So increase l by one if you do t_f = 150
-        l = 16
-        self.tList = np.linspace(t_0, t_f, 2 ** (l))
-        self.h = self.tList[1] - self.tList[0]
+        self.dataPoints = 5000
+        self.tList = np.zeros(self.dataPoints)
+        self.h = 0.01
+        self.e = 1e-7
+        self.h_new = 0
+        self.h_min = 0.01
 
     def F(self, X, i):
         SystemMat = self.getSystemMat(X, i)
@@ -59,7 +56,6 @@ class Solver:
 
     def getSystemMat(self, X, i):
         SystemMat = self.SystemMat.copy()
-
         ## TODO: Kidney needs to be added as well
         for key in self.organsObj.organsDict["RecPos"].keys():  ## RecPos Organs: Tumor, Liver, Kidney, etc
             organ = self.organsObj.organsDict["RecPos"][key]
@@ -77,26 +73,87 @@ class Solver:
 
 
     def solve(self):
-        for j, t in enumerate(self.tList[1:]):
-            i = j+1 ## Note that the enumerate does not show the index of element.
+        for j, t in enumerate(self.tList[:-1]):
+            i = j+1
             self.inject(t)
+            flag = 0
+            while flag == 0:
+                # y = self.BigVectList[:,i-1].copy()
+                y = self.BigVect.copy()
+                f0 = self.F(y,i)
+                f1 = self.F(y + f0*self.h/4, i)
+                f2 = self.F(y + 3*self.h/32*f0 + 9*self.h/32*f1, i)
+                f3 = self.F(y + 1932*self.h/2197*f0 - 7200*self.h/2197*f1 + 7296*self.h/2197*f2, i)
+                f4 = self.F(y + 439*self.h/216*f0 - 8*self.h*f1 + 3680*self.h/513*f2 - 845*self.h/4104*f3, i)
+                f5 = self.F(y - 8*self.h/27*f0 + 2*self.h*f1 - 3544*self.h/2565*f2 + 1859*self.h/4104*f3 - 11*self.h/40*f4, i)
+
+                # Err = np.linalg.norm(self.h * (1/360*f0 - 128/4275*f2 - 2197/75240*f3 + 1/50*f4 + 2/55*f5))
+                Err = np.abs(np.max(self.h * (1/360*f0 - 128/4275*f2 - 2197/75240*f3 + 1/50*f4 + 2/55*f5)))
+                MaxErr = np.abs(self.h * self.e)
+                ratio = MaxErr / Err
+
+                self.h_new = 0.9 * self.h * np.power(ratio, 1/4)
+                # print( np.power(ratio, 1/4))
+
+                # if self.h_new < self.h_min:
+                #     self.h_new = self.h_min
+
+                # if ratio < 1:
+                if self.h_new < self.h:
+                    if self.h_new < 0.5*self.h:
+                        self.h_new = 0.5 * self.h
+                    self.h = self.h_new
+                else:
+                    # print("Hely")
+                    # if self.h_new > 4 * self.h:
+                    #     self.h_new = 4 * self.h
+                    flag = 1
 
 
-            f0 = self.F(self.BigVect, i)
-            f1 = self.F(self.BigVect+f0*self.h/2, i)
-            f2 = self.F(self.BigVect+f1*self.h/2, i)
-            f3 = self.F(self.BigVect+f2*self.h, i)
+                # if self.h_new < self.h:
+                #     # if self.h_new < 0.1*self.h:
+                #     #     print("hello")
+                #     #     self.h_new = 0.1*self.h
+                #     #     pass
+                #     # else:
+                #     #     self.h = self.h_new
+                #     self.h = self.h_new
+                # else:
+                #     # if self.h_new > 100*self.h:
+                #     #     self.h_new = 100*self.h
+                #     #     pass
+                #     # else:
+                #     #     self.h = self.h_new
+                #
+                #     #self.h = self.h_new
+                #     flag = 1
 
-            # self.BigVect += 1/6 * (f0 + 2*f1 + 2*f2 + f3)
-            self.BigVect = self.BigVect + self.h/6 * (f0 + 2*f1 + 2*f2 + f3)
-            #self.SystemMat = self.getSystemMat(self.BigVect,i)
-            self.SystemMat = self.getSystemMat(self.BigVect,i)
+            # if self.h < self.h_min:
+            #     self.h = self.h_min
 
-            #self.BigVectList[:,i+1] = self.BigVect.copy()
+            y += self.h * (16/135*f0 + 6656/12825*f2 + 28561/56430*f3 - 9/50*f4 + 2/55*f5)
+            self.BigVect = y.copy()
+            t_new = t + self.h
             self.BigVectList[:,i] = self.BigVect.copy()
+            self.tList[i] = t_new
+            self.SystemMat = self.getSystemMat(self.BigVect, i)
+            self.h = self.h_new
 
+            # print(j)
             if j%1000 == 0:
                 print(j)
+
+
+
+
+
+            # self.BigVect += 1/6 * (f0 + 2*f1 + 2*f2 + f3)
+            # self.BigVect = self.BigVect + self.h/6 * (f0 + 2*f1 + 2*f2 + f3)
+            # #self.SystemMat = self.getSystemMat(self.BigVect,i)
+            # self.SystemMat = self.getSystemMat(self.BigVect,i)
+            #
+            # #self.BigVectList[:,i+1] = self.BigVect.copy()
+            # self.BigVectList[:,i] = self.BigVect.copy()
 
 
         ####  Debugging

@@ -10,10 +10,15 @@ class DataProcessing:
         self.encoder = encoderObj
         self.results = solverObj
 
+        self.data = self.results.solution
+
 
     def plotter(self):
-        for i in range(1, 110, 2):
-            plt.plot(self.results.tList, self.results.BigVectList[i, :])
+        for i in range(0, 110):##110
+            # plt.plot(self.results.tList, self.results.BigVectList[i, :])
+            # # plt.plot(self.results.tList, self.results.BigVectList[i, :], 'o', 'red')
+            plt.plot(self.data.t, self.data.y[i,:], label=i)
+            # plt.plot(self.results.tList, self.results.BigVectList[i, :], label = i)
 
-
+        # plt.legend()
         print("Hello")
