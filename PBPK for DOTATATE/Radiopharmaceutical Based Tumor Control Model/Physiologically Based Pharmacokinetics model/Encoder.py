@@ -19,7 +19,7 @@ class Organs:
     def __init__(self, patientObj, therapyObj):
         self.patient = patientObj
         self.therapy = therapyObj
-        self.typesList = ["ArtVein", "Lungs", "RecNeg", "RecPos", "Kidney"]
+        self.typesList = ["ArtVein", "Lungs", "RecNeg", "RecPos", "Kidney", "BloodProtein"]
 
         self.defineLowLevelVariables()
 
@@ -27,7 +27,8 @@ class Organs:
                            self.typesList[1]: self.LungsDict,  ## This is for lungs which is a special kind of RecNeg
                            self.typesList[2]: self.RecNegDict,
                            self.typesList[3]: self.RecPosDict,
-                           self.typesList[4]: self.KidneyDict}
+                           self.typesList[4]: self.KidneyDict,
+                           self.typesList[5]: self.BloodProteinDict}
 
         self.initOrgansDict()
 
@@ -64,7 +65,8 @@ class Organs:
                                self.typesList[1]: 4,  ## This is the lungs which is a special kind of Recp Neg
                                self.typesList[2]: 4,
                                self.typesList[3]: 8,
-                               self.typesList[4]: 10}  ## This is the number of variable for each organ type
+                               self.typesList[4]: 10,
+                               self.typesList[5]: 2}  ## This is the number of variable for each organ type
         ## For example lungs organ (which is RecNeg) has four variable: P_v, P*_v, P_int, P*_int
 
         self.ArtVeinDict = dict()
@@ -72,6 +74,7 @@ class Organs:
         self.RecNegDict = dict()
         self.RecPosDict = dict()
         self.KidneyDict = dict()
+        self.BloodProteinDict = dict()
 
         self.stencil = {"base": 0, "length": 0}  ## This stencil will help to make the BigVector variable
         ## stencil contains the base and length. For example for organ_i base
@@ -88,11 +91,14 @@ class Organs:
 
         KidneyMap_bigVect = {"P_v": 0, "P*_v": 1, "P_intra": 2, "P*_intra": 3, "P_int": 4, "P*_int": 5, "RP": 6,
                              "RP*": 7, "P_intern": 8, "P*_intern": 9}
+
+        BloodProteinMap_bigVect = {"PPR":0, "PPR*":1}
         self.typesMapDict_bigVect = {self.typesList[0]: ArtVeinMap_bigVect,
                                      self.typesList[1]: RecNegMap_bigVect,
                                      self.typesList[2]: RecNegMap_bigVect, ## This is for lungs which is a special kind of RecNeg
                                      self.typesList[3]: RecPosMap_bigVect,
-                                     self.typesList[4]: KidneyMap_bigVect  ## This is for Kidney
+                                     self.typesList[4]: KidneyMap_bigVect,  ## This is for Kidney
+                                     self.typesList[5]: BloodProteinMap_bigVect
                                      }
 
 
@@ -128,11 +134,14 @@ class Organs:
                             "lambda_phys": [[0, 1, +1], [1, 1, -1], [2, 3, +1], [3, 3, -1], [4, 5, +1], [5, 5, -1],
                                             [6, 7, +1], [7, 7, -1], [8, 9, +1], [9, 9, -1]]}
 
+        BloodProteinMap_sysMat = {"lambda_phys":[[0,1,1],[1,1,-1]]}
+
         self.typesMapDict_sysMat = {self.typesList[0]: ArtVeinMap_sysMat,
                                      self.typesList[1]: RecNegMap_sysMat,  ## This is for lungs which is a special kind of RecNeg
                                      self.typesList[2]: RecNegMap_sysMat,
                                      self.typesList[3]: RecPosMap_sysMat,
-                                     self.typesList[4]: KidneyMap_sysMat
+                                     self.typesList[4]: KidneyMap_sysMat,
+                                    self.typesList[5]: BloodProteinMap_sysMat
                                     }
 
 
@@ -160,7 +169,10 @@ class BigVectEncoder:
 class SystemMatrixEncoder:
     def __init__(self, organs):
         self.organs = organs
+        self.LiverDict = self.organs.organsDict["RecPos"]["Liver"]
+
         self.createSysMat()
+
 
     def createSysMat(self):
         self.SystemMat = np.zeros((self.organs.N,self.organs.N))
@@ -215,6 +227,8 @@ class SystemMatrixEncoder:
                                 ### number of column and then by using the volume map list I can get the appropriate key
                                 ### and go and get the value from the patient object
                         else:
+                            # if (organ["name"] == "Adipose"):
+                            #     print("H")
                             subMat[pos[0], pos[1]] += sign * organ[paramName]
 
                 x1 = subMat_initialPosition[0,0]
@@ -225,19 +239,35 @@ class SystemMatrixEncoder:
                 self.SystemMat[x1:x2, y1:y2] = subMat.copy()
 
                 if type in ["RecPos", "RecNeg", "Kidney"]  : ## The outer F insertion
-                    self.SystemMat[x1, 0] = organ['F']/self.organs.patient.Art["V_v"]
-                    self.SystemMat[x1+1, 1] = organ['F']/self.organs.patient.Art["V_v"]
+                    if organ["name"] in ["GI","Spleen"]:
+                        thisOrganStencil = self.organs.organsDict[type][organ["name"]]["stencil"]
+                        col = thisOrganStencil["base"]
+                        row = self.LiverDict["stencil"]["base"]
+                        self.SystemMat[row, col] = organ["F"]/organ["V_v"]
+                        self.SystemMat[row+1, col+1] = organ["F"]/organ["V_v"]
 
-                    self.SystemMat[2,x1] = organ['F']/organ["V_v"]
-                    self.SystemMat[3,x1+1] = organ['F']/organ["V_v"]
+                        self.SystemMat[x1, 0] = organ['F'] / self.organs.patient.Art["V_v"]
+                        self.SystemMat[x1 + 1, 1] = organ['F'] / self.organs.patient.Art["V_v"]
+                    else:
+                        self.SystemMat[2,x1] = organ['F']/organ["V_v"]
+                        self.SystemMat[3,x1+1] = organ['F']/organ["V_v"]
+
+                        self.SystemMat[x1, 0] = organ['F'] / self.organs.patient.Art["V_v"]
+                        self.SystemMat[x1 + 1, 1] = organ['F'] / self.organs.patient.Art["V_v"]
 
                 if type == "Lungs":
-                    shift =2
+                    shift = self.organs.organsDict["ArtVein"]["Vein"]["stencil"]["base"]    ## 2
                     self.SystemMat[x1,0+shift] = organ['F']/self.organs.patient.Vein["V_v"]
                     self.SystemMat[x1+1,1+shift] = organ['F']/self.organs.patient.Vein["V_v"]
 
                     self.SystemMat[0, x1] = organ['F']/organ["V_v"]
                     self.SystemMat[1, x1+1] = organ['F']/organ["V_v"]
+
+
+                if type == "BloodProtein":
+                    shift = self.organs.organsDict["ArtVein"]["Vein"]["stencil"]["base"]
+                    self.SystemMat[x1,0+shift] = organ["k_pr"]
+                    self.SystemMat[x1+1,1+shift] = organ["k_pr"]
 
         print("Hello")
 

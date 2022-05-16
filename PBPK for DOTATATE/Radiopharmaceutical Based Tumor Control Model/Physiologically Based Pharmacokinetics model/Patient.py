@@ -436,6 +436,17 @@ class Patient:
             "lambda_phys": lambda_phys,
         }
 
+
+        ##
+        ####
+        ######
+        ######## BloodProtein initialization
+        self.BloodProtein = {
+            "name": "BloodProtein",
+            "k_pr": 5e-4,
+            "lambda_phys": lambda_phys
+        }
+
         ##
         ####
         ######
@@ -493,6 +504,7 @@ class Patient:
         self.KidneyList = [self.Kidney]
         self.LungsList = [self.Lungs]
         self.receptorNegativeList = [self.Skin, self.Adipose, self.Brain, self.Heart, self.Bone]
+        self.BloodProteinList = [self.BloodProtein]
         self.ArtVeinList = [self.Art, self.Vein]
 
         self.calculateK_on()    ## Will calculate K_on = k_on * R0 for RecPos and Kidney
@@ -501,6 +513,7 @@ class Patient:
             "ArtVein": self.ArtVeinList,
             "Lungs": self.LungsList,
             "RecNeg": self.receptorNegativeList,
+            "BloodProtein": self.BloodProteinList,
             "RecPos": self.receptorPositiveList,
             "Kidney": self.KidneyList,
         }

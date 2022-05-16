@@ -179,6 +179,12 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
             "P*_int": 0
         }
 
+        self.BloodProtein = {
+            "name": "BloodProtein",
+            "PPR": 0,
+            "PPR*":0
+        }
+
         self.Art = {
             "name": "Art",
             "P": 0,
@@ -203,12 +209,15 @@ class Therapy:  ## Note that this is a single therapy not the Therapy plan.
                                      self.Muscle, self.ProstateUterus, self.Adrenals, self.Rest]
         self.KidneyList = [self.Kidney]
         self.receptorNegativeList = [self.Skin, self.Adipose, self.Brain, self.Heart, self.Bone]
+        self.BloodProteinList = [self.BloodProtein]
+
         self.ArtVeinList = [self.Art, self.Vein]
 
         self.Organs = {
             "ArtVein": self.ArtVeinList,
             "Lungs": [self.Lungs],
             "RecNeg": self.receptorNegativeList,
+            "BloodProtein": self.BloodProteinList,
             "RecPos": self.receptorPositiveList,
             "Kidney": self.KidneyList,
 

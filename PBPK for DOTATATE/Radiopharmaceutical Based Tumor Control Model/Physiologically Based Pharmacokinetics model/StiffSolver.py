@@ -128,7 +128,7 @@ class StiffSolver:
         # # for i in debugList:
         # #     peptide += self.BigVectList[i,:]
         # print("Hello")
-        self.solution = solve_ivp(self.F, [0,80000], self.BigVect, method="BDF")
+        self.solution = solve_ivp(self.F, [0,100000], self.BigVect, method="BDF")
         print("hello")
 
 
