@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="DoublePendulum"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\..\;CMake Files\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\;CMake Files\..\..\..\..\..\..\usr\;CMake Files\..\..\..\..\..\..\usr\lib\;CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\;CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\;CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\;CMake Files\..\exploringEigen\;CMake Files\..\exploringEigen\eigen-3.4.0\;CMake Files\..\exploringEigen\eigen-3.4.0\build\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="DoublePendulum">
+				<Option output="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/DoublePendulum" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/BCCRC.CA/aparanj/Projects/ClionTests/exploringEigen/eigen-3.4.0"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 DoublePendulum"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="DoublePendulum/fast">
+				<Option output="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/DoublePendulum" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/home/BCCRC.CA/aparanj/Projects/ClionTests/exploringEigen/eigen-3.4.0"/>
+					<Add directory="/usr/include/c++/9"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/9"/>
+					<Add directory="/usr/include/c++/9/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 DoublePendulum/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Ball.cpp">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Ball.h">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Line.cpp">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Line.h">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Physics.cpp">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Physics.h">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Pivot.cpp">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Pivot.h">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Sketch.cpp">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/libs/Sketch.h">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/main.cpp">
+			<Option target="DoublePendulum"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLConfigDependencies.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLSharedTargets-none.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/../../../../../../usr/lib/x86_64-linux-gnu/cmake/SFML/SFMLSharedTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\..\..\..\usr\lib\x86_64-linux-gnu\cmake\SFML\"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/../exploringEigen/eigen-3.4.0/build/Eigen3Config.cmake">
+			<Option virtualFolder="CMake Files\..\exploringEigen\eigen-3.4.0\build\"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/../exploringEigen/eigen-3.4.0/build/Eigen3ConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\exploringEigen\eigen-3.4.0\build\"/>
+		</Unit>
+		<Unit filename="/home/BCCRC.CA/aparanj/Projects/ClionTests/DoublePendulum/../exploringEigen/eigen-3.4.0/build/Eigen3Targets.cmake">
+			<Option virtualFolder="CMake Files\..\exploringEigen\eigen-3.4.0\build\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
