@@ -8,3 +8,8 @@ ipynb simulation plot:
 
 ![doublePendulum.png](https://github.com/alifele/Computational-Physics/blob/main/Physical%20Systems/Double%20Pendulum/Images/doublePendulum.png?raw=true)
 
+
+
+CPP and SFML implementation
+![doublePendulum.png](https://github.com/alifele/Computational-Physics/blob/main/Physical%20Systems/Double%20Pendulum/Images/doublePend.png?raw=true)
+
