@@ -1,0 +1,7 @@
+https://physics.weber.edu/schroeder/software/
+
+The author of the great book "thermal physics", Daniel Shroder, has made these great online simulations. The great thing is that at the bottom of the page, you can find some toturials on how to creat your own web based simulations.
+
+He is mainly using the canvas feature of HTML5 for the drawing and the basic GUI capabilities of HTML5 for the GUI. And the he uses JS to do the drawing, control the GUI. Also he uses some JS based libraries to plot things, and do the mathematics (using arrays, matrices, vectors, etc)
+
+
