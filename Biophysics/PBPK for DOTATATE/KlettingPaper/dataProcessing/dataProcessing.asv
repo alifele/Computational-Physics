@@ -1,0 +1,9 @@
+t = results.Time;
+data = results.Data;
+
+t_min = t(1);
+t_max = t(end);
+
+
+
+plot(t, data(:,5))
