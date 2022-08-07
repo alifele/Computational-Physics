@@ -1,7 +1,7 @@
 paramSweep = data1.samples.generate{:,:};
 
-hotAmountSteps = 10;
-coldAmountSteps = 10;
+hotAmountSteps = 20;
+coldAmountSteps = 20;
 
 hot = paramSweep(:,1);
 cold = paramSweep(:,2);
@@ -12,7 +12,7 @@ Hot = reshape(hot, hotAmountSteps,hotAmountSteps,4);  % unit is nanomole
 % Hot unit conversion to Activity = lambda*N
 % A = Hot*1e-9(mol) * 6.022*1e23(#/mole) * lambda(1/min) * 1/60(min/sec) =
 % Hot*0.72*1e9 (#/sec) = Hot*0.72 GBq
-Hot = Hot * 0.72 % unit is GBq;
+Hot = Hot * 72; % unit is GBq;
 Cold = reshape(cold, coldAmountSteps,coldAmountSteps,4);
 
 
@@ -45,18 +45,20 @@ TIA = TIA / 1e9; % the unit if TIA is now #bilion = GBq.sec
 t = tiledlayout(2,2,'TileSpacing','Compact','Padding','Compact');
 for i=1:4
     nexttile;
-    contourf(Cold(:,:,i), Hot(:,:,i),TIA(:,:,i)./(TIA(:,:,1)), 20);
-%     caxis([0,2])
+    %contourf(Cold(:,:,i), Hot(:,:,i),TIA(:,:,i)./(TIA(:,:,1)), 20);
+    contourf(Cold(:,:,i), Hot(:,:,i),TIA(:,:,i)-(TIA(:,:,1)), 20);
+    colormap("turbo")
+    %caxis([1,1.9])
     colorbar;
     title("time interval between injections: " + Interval(1,1,i) + " min", fontsize=14, FontWeight="normal");
     
 
 end
-% cb = colorbar;
-% cb.Layout.Tile = 'east';
-% cb.Label.String = "TIA [GBq.second]";
-% cb.Label.FontSize = 10;
-title(t, ["TIA in tumor: 5 equal injections"], fontsize=15)
+cb = colorbar;
+cb.Layout.Tile = 'east';
+cb.Label.String = "Normalized TIA [dimensionless]";
+cb.Label.FontSize = 10;
+title(t, ["Normalized TIA in tumor: 5 equal injections"], fontsize=15)
 xlabel(t, "total injected cold amount [nmol]", fontsize=15);
 ylabel(t, "total injected activity [GBq]", fontsize=15);
 

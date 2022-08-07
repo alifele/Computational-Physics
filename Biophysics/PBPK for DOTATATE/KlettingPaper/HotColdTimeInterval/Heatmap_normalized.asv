@@ -1,7 +1,7 @@
 paramSweep = data1.samples.generate{:,:};
 
-hotAmountSteps = 16;
-coldAmountSteps = 16;
+hotAmountSteps = 20;
+coldAmountSteps = 20;
 
 hot = paramSweep(:,1);
 cold = paramSweep(:,2);
@@ -12,24 +12,26 @@ Hot = reshape(hot, hotAmountSteps,hotAmountSteps,4);  % unit is nanomole
 % Hot unit conversion to Activity = lambda*N
 % A = Hot*1e-9(mol) * 6.022*1e23(#/mole) * lambda(1/min) * 1/60(min/sec) =
 % Hot*0.72*1e9 (#/sec) = Hot*0.72 GBq
-Hot = Hot * 0.72 % unit is GBq;
-Cold = reshape(cold, 10,10,4);
+Hot = Hot * 72; % unit is GBq;
+Cold = reshape(cold, coldAmountSteps,coldAmountSteps,4);
 
 
 % Calculating total hot and total cold injected
 Hot = Hot*5; %note that since we had 5 injections so we should *5
 Cold = Cold*5; %note that since we had 5 injections so we should *5
-Interval = reshape(interval, 10,10,4);
+
+Interval = reshape(interval, coldAmountSteps,coldAmountSteps,4); % we could
+% also write: Interval = reshape(interval, hotAmountSteps,hotAmountSteps,4);
 
 
-TINList = zeros(400,1); % time integrated number of hot molecules
+TINList = zeros(hotAmountSteps^2*4,1); % time integrated number of hot molecules
 res = data1.results;
 
 for i=1:length(res)
     TINList(i) = res(i).ScalarObservables{:,:};
 end
 
-TIN = reshape(TINList, 10,10,4);
+TIN = reshape(TINList, coldAmountSteps,coldAmountSteps,4);
 TIA = TIN * 7.23 * 1e-5;  % time integratede activity; A=N*lambda
 % the unit of TIA is not #, it is nanomole. so it should be converted to #
 % by multiplying at 6.023*10^23 * 10^(-9)
@@ -44,7 +46,7 @@ t = tiledlayout(2,2,'TileSpacing','Compact','Padding','Compact');
 for i=1:4
     nexttile;
     contourf(Cold(:,:,i), Hot(:,:,i),TIA(:,:,i)./(TIA(:,:,1)), 20);
-%     caxis([0,2])
+caxis([0,2])
     colorbar;
     title("time interval between injections: " + Interval(1,1,i) + " min", fontsize=14, FontWeight="normal");
     
