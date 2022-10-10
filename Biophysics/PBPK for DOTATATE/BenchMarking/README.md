@@ -4,8 +4,11 @@
 Differential Equations:
 
 $$\frac{dA}{dt} = -pA+rB+I_0$$
+
 $$\frac{dB}{dt} = -(r+q)B+pA + sC + I_1$$
+
 $$\frac{dC}{dt} = qB - sC + I_2$$
+
 
 The variables are summarized in the $\Phi$ vector. So the system of differential equaitons can be written as:
 
