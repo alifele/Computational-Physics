@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<MorpheusModel version="4">
+    <Description>
+        <Details></Details>
+        <Title>Engulfment</Title>
+    </Description>
+    <Space>
+        <Lattice class="square">
+            <Neighborhood>
+                <Order>optimal</Order>
+            </Neighborhood>
+            <Size symbol="size" value="200,200,0"/>
+        </Lattice>
+        <SpaceSymbol symbol="space"/>
+    </Space>
+    <Time>
+        <StartTime value="0"/>
+        <StopTime value="5000"/>
+        <TimeSymbol symbol="time"/>
+    </Time>
+    <Analysis>
+        <ModelGraph include-tags="#untagged" format="dot" reduced="false"/>
+        <Gnuplotter time-step="50">
+            <Plot>
+                <Cells value="cell.type"/>
+            </Plot>
+            <Terminal name="png"/>
+        </Gnuplotter>
+    </Analysis>
+    <CellTypes>
+        <CellType name="ct0" class="medium"/>
+        <CellType name="ct1" class="biological">
+            <VolumeConstraint target="50" strength="2"/>
+            <SurfaceConstraint target="28" strength="3" mode="surface"/>
+            <ConnectivityConstraint/>
+        </CellType>
+        <CellType name="ct2" class="biological">
+            <VolumeConstraint target="50" strength="2"/>
+            <SurfaceConstraint target="28" strength="3" mode="surface"/>
+            <ConnectivityConstraint/>
+        </CellType>
+    </CellTypes>
+    <CPM>
+        <Interaction>
+            <Contact type2="ct1" type1="ct0" value="15"/>
+            <Contact type2="ct2" type1="ct0" value="8"/>
+            <Contact type2="ct1" type1="ct1" value="3"/>
+            <Contact type2="ct2" type1="ct1" value="12"/>
+            <Contact type2="ct2" type1="ct2" value="13"/>
+        </Interaction>
+        <ShapeSurface scaling="norm">
+            <Neighborhood>
+                <Order>optimal</Order>
+            </Neighborhood>
+        </ShapeSurface>
+        <MonteCarloSampler stepper="edgelist">
+            <MCSDuration value="0.1"/>
+            <MetropolisKinetics temperature="6"/>
+            <Neighborhood>
+                <Order>optimal</Order>
+            </Neighborhood>
+        </MonteCarloSampler>
+    </CPM>
+    <CellPopulations>
+        <Population type="ct1" size="1">
+            <InitCircle random_displacement="5" mode="random" number-of-cells="120">
+                <Dimensions center="size.x/2, size.y/2, 0" radius="75"/>
+            </InitCircle>
+        </Population>
+        <Population type="ct2" size="1">
+            <InitCircle random_displacement="5" mode="random" number-of-cells="120">
+                <Dimensions center="size.x/2, size.y/2, 0" radius="70"/>
+            </InitCircle>
+        </Population>
+    </CellPopulations>
+</MorpheusModel>

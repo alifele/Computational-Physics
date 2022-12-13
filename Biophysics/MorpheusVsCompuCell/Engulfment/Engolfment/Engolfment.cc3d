@@ -1,0 +1,5 @@
+<Simulation version="4.3.2">
+   <XMLScript Type="XMLScript">Simulation/Engolfment.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/Engolfment.py</PythonScript>
+   <Resource Type="Python">Simulation/EngolfmentSteppables.py</Resource>
+</Simulation>

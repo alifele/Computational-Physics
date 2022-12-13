@@ -1,0 +1,106 @@
+<CompuCell3D Revision="0" Version="4.3.2">
+   
+   <Metadata>
+      
+      <!-- Basic properties simulation -->
+      <NumberOfProcessors>1</NumberOfProcessors>
+      <DebugOutputFrequency>10</DebugOutputFrequency>
+      <!-- <NonParallelModule Name="Potts"/> -->
+   </Metadata>
+   
+   <Potts>
+      
+      <!-- Basic properties of CPM (GGH) algorithm -->
+      <Dimensions x="256" y="256" z="1"/>
+      <Steps>1000000</Steps>
+      <Temperature>15</Temperature>
+      <NeighborOrder>3</NeighborOrder>
+   </Potts>
+   
+   <Plugin Name="CellType">
+      
+      <!-- Listing all cell types in the simulation -->
+      <CellType TypeId="0" TypeName="Medium"/>
+      <CellType TypeId="1" TypeName="ct0"/>
+      <CellType TypeId="2" TypeName="ct1"/>
+   </Plugin>
+   
+   <Plugin Name="Volume">
+      <VolumeEnergyParameters CellType="ct0" LambdaVolume="2.0" TargetVolume="50"/>
+      <VolumeEnergyParameters CellType="ct1" LambdaVolume="2.0" TargetVolume="50"/>
+   </Plugin>
+   
+   <Plugin Name="Surface">
+      <SurfaceEnergyParameters CellType="ct0" LambdaSurface="2.0" TargetSurface="50"/>
+      <SurfaceEnergyParameters CellType="ct1" LambdaSurface="2.0" TargetSurface="50"/>
+   </Plugin>
+   
+   <Plugin Name="CenterOfMass">
+      
+      <!-- Module tracking center of mass of each cell -->
+   </Plugin>
+   
+   <Plugin Name="NeighborTracker">
+      
+      <!-- Module tracking neighboring cells of each cell -->
+   </Plugin>
+   
+   <Plugin Name="PixelTracker">
+      
+      <!-- Module tracking pixels of each cell -->
+   </Plugin>
+   
+   <Plugin Name="BoundaryPixelTracker">
+      
+      <!-- Module tracking boundary pixels of each cell -->
+      <NeighborOrder>1</NeighborOrder>
+   </Plugin>
+   
+   <Plugin Name="Contact">
+      <!-- Specification of adhesion energies -->
+      <Energy Type1="Medium" Type2="Medium">10.0</Energy>
+      <Energy Type1="Medium" Type2="ct0">19.0</Energy>
+      <Energy Type1="Medium" Type2="ct1">10.0</Energy>
+      <Energy Type1="ct0" Type2="ct0">12.0</Energy>
+      <Energy Type1="ct0" Type2="ct1">5.0</Energy>
+      <Energy Type1="ct1" Type2="ct1">12.0</Energy>
+      <NeighborOrder>4</NeighborOrder>
+   </Plugin>
+   
+   <!-- <Plugin Name="Connectivity"> -->
+      <!-- <Connectivity constraint applied to each cell. Energy penalty specifies how strong the constraint is. Penalty is specified globally for each cell>  -->
+      <!-- <This constraint works in 2D and on square lattice only! It also requires that the <NeighborOrder> in the Potts section is 1 or 2!> -->
+      <!-- <For more flexible version of this plugin use ConnectivityLocalFlex where constraint penalty is specified for each cell individually using Python scripting using the following syntax> -->
+      <!-- <self.connectivityLocalFlexPlugin.setConnectivityStrength(cell,10000000)> -->
+      <!-- <Penalty>10000000</Penalty> -->
+   <!-- </Plugin> -->
+   
+   <Steppable Type="BlobInitializer">
+      
+      <!-- Initial layout of cells in the form of spherical (circular in 2D) blob --> 
+
+
+      <Region>
+         <Center x="108" y="128" z="0"/>
+         <Radius>25</Radius>
+         <Gap>1</Gap>
+         <Width>3</Width>
+         <Types>ct1</Types>
+      </Region>
+      
+      <Region>
+         <Center x="148" y="128" z="0"/>
+         <Radius>25</Radius>
+         <Gap>2</Gap>
+         <Width>4</Width>
+         <Types>ct0</Types>
+      </Region>
+      
+   </Steppable>
+   
+
+   
+   
+</CompuCell3D>
+
+ 

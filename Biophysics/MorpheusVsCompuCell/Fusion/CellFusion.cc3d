@@ -1,0 +1,5 @@
+<Simulation version="4.3.2">
+   <XMLScript Type="XMLScript">Simulation/CellFusion.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/CellFusion.py</PythonScript>
+   <Resource Type="Python">Simulation/CellFusionSteppables.py</Resource>
+</Simulation>

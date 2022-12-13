@@ -1,0 +1,5 @@
+<Simulation version="4.3.2">
+   <XMLScript Type="XMLScript">Simulation/Seperation.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/Seperation.py</PythonScript>
+   <Resource Type="Python">Simulation/SeperationSteppables.py</Resource>
+</Simulation>
