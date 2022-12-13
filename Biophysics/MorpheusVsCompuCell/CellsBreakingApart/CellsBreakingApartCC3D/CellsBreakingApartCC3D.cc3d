@@ -1,0 +1,5 @@
+<Simulation version="4.3.2">
+   <XMLScript Type="XMLScript">Simulation/CellsBreakingApartCC3D.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/CellsBreakingApartCC3D.py</PythonScript>
+   <Resource Type="Python">Simulation/CellsBreakingApartCC3DSteppables.py</Resource>
+</Simulation>

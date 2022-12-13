@@ -1,0 +1,5 @@
+<Simulation version="4.3.2">
+   <XMLScript Type="XMLScript">Simulation/EggStructure.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/EggStructure.py</PythonScript>
+   <Resource Type="Python">Simulation/EggStructureSteppables.py</Resource>
+</Simulation>

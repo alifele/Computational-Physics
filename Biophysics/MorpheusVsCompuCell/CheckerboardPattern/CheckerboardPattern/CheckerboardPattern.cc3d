@@ -1,0 +1,5 @@
+<Simulation version="4.3.2">
+   <XMLScript Type="XMLScript">Simulation/CheckerboardPattern.xml</XMLScript>
+   <PythonScript Type="PythonScript">Simulation/CheckerboardPattern.py</PythonScript>
+   <Resource Type="Python">Simulation/CheckerboardPatternSteppables.py</Resource>
+</Simulation>
