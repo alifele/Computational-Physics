@@ -1,2 +1,2 @@
 # Computational-Physics
-computational physics
+Computational Physics
